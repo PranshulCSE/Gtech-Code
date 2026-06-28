@@ -1,20 +1,24 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "GTech Code is a comprehensive, full-stack web application designed for developers to hone their coding skills, take challenges, participate in contests, and manage technical submissions. Built on the powerful **MERN Stack**, it features a secure, scalable backend and an intuitive frontend experience for seamless code practice.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Pranshul",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.3",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "validator": "^13.15.35"
   }
 }
