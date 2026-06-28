@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-    FirstName: {
+    firstname: {
         type: String,
         required: true,
         minLength: 3,
         maxLength: 30
     },
-    LastName: {
+    lastname: {
         type: String,
         minLength: 3,
         maxLength: 20
@@ -22,7 +22,7 @@ const UserSchema = new Schema({
         immutable: true,
     },
     age: {
-        type: number,
+        type: Number,
         min: 8,
         max: 80
     },
@@ -31,14 +31,12 @@ const UserSchema = new Schema({
         enum: ["user", "admin"],
         default: "user"
     },
-    problemSolved: {
+    problemsolved: {
         type: [String],
     },
     password: {
         type: String,
-        required: true,
-        minLength: 8,
-        maxLength: 20
+        required: true
     }
 
 }, { timestamps: true });

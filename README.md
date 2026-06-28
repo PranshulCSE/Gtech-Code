@@ -22,20 +22,3 @@ GTech Code is a comprehensive, full-stack web application designed for developer
 * **Responsive UI:** Optimized for a smooth experience across both mobile and desktop screens.
 
 ---
-
-## 📂 Project Structure
-
-```text
-gtech-code/
-├── client/              # Frontend (React.js application)
-│   ├── src/
-│   │   ├── components/  # Reusable UI components
-│   │   ├── pages/       # Page views (Dashboard, Problems, Home)
-│   │   └── context/     # Global state/Context API
-├── server/              # Backend (Node.js & Express API)
-│   ├── config/          # DB connection configuration
-│   ├── controllers/     # Request handlers & core business logic
-│   ├── models/          # MongoDB/Mongoose schemas
-│   ├── routes/          # API endpoint routes
-│   └── middleware/      # Auth & error handling logic
-└── README.md

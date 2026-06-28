@@ -1,14 +1,18 @@
 const express= require('express');
 const app= express();
 require('dotenv').config();
-const main= require('./config/DB');
+const main= require('../config/DB');
 const cookieParser=require('cookie-parser');
+const authRouter=require("../routes/UserAuth");
 
 
 // To convert request body into json format
 app.use(express.json());
 // To convert cookies into json format
 app.use(cookieParser());
+
+// Routing user to Route
+app.use("/user",authRouter);
 
 // To Connect MongoDB Database and Start the Server
 async function startServer(){

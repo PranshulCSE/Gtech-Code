@@ -4,40 +4,33 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-
 // Register User
 
-const Register = async (req,res)=>{
-    try{
-        // Validating the request body
+const registerUser = async (req, res) => {
+    try {
         ValidateUser(req.body);
-       
-        const {firstname,email,password} = req.body;
 
-        // Hash the password before saving it
-        req.body.password = await bcrypt.hash(password, 10);
+        const { firstname, email, password } = req.body;
 
-        // Creating a new user in the database
+   
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await user.create({ ...req.body, password: hashedPassword });
 
-        //Generating JSON Web Token (JWT) for the user
-        const token = jwt.sign({ _id:newUser._id,email:newUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ _id: newUser._id, email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        //   Setting the token in the Cookie and Setting its MaxAge to 1 hour
-        res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 }); 
+        res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
 
         res.status(201).send('User Registered Successfully');
-
     }
-    catch(err){
-        res.status(400).json({message: 'Error registering user'});
+    catch (err) {
+        res.status(400).send('Error registering user' + err);
     }
 }
 
 // Login User
 
-const Login = async (req,res)=>{
+const loginUser = async (req,res)=>{
 try{
     const {email,password} = req.body;
 
@@ -72,7 +65,7 @@ catch(err){
 
 // Logout User
 
-const Logout = async (req,res)=>{
+const logoutUser = async (req,res)=>{
     try{
         res.clearCookie('token');
         res.status(200).send('User Logged out Successfully');
@@ -81,12 +74,42 @@ const Logout = async (req,res)=>{
         res.status(400).send('Error logging out user');
     }
 }
+
 // Get User Profile
- 
+
+const getUserProfile = async(req,res)=>{
+    try {
+        // Our Auth middleware attaches the decoded token payload to req.user
+        const userId = req.user._id;
+
+        const foundUser = await user.findById(userId).select('-password'); // Exclude password from the return data
+        if (!foundUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(foundUser);
+    }
+    catch (err) {
+        res.status(400).json({ message: 'Error fetching profile: ' + err.message });
+    }
+}
 
 // Reset Password
 
+const resetPassword = async(req,res)=>{
+    res.send('This functionality is temporarily unavailable. Please try again later.');
+}
+
 // Update User Profile
+
+const updateUserProfile = async(req,res)=>{
+    res.send('This functionality is temporarily unavailable. Please try again later.');}
 
 // Verify User Email
 
+const verifyUserEmail = async(req,res)=>{
+    res.send('This functionality is temporarily unavailable. Please try again later.'); 
+
+}
+
+module.exports = {registerUser,loginUser,logoutUser,getUserProfile,resetPassword,updateUserProfile,verifyUserEmail};
