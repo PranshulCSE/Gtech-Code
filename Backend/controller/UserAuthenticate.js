@@ -15,9 +15,11 @@ const registerUser = async (req, res) => {
    
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        req.body.role = 'user'; // Assigning the role as 'user' for all new registrations
+
         const newUser = await user.create({ ...req.body, password: hashedPassword });
 
-        const token = jwt.sign({ _id: newUser._id, email: newUser.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ _id: newUser._id, email: newUser.email , role: newUser.role}, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
 
@@ -65,13 +67,34 @@ catch(err){
 
 // Logout User
 
+// const logoutUser = async (req,res)=>{
+//     try{
+//         res.clearCookie('token');
+//         res.status(200).send('User Logged out Successfully');
+//     }
+//     catch(err){
+//         res.status(400).send('Error logging out user');
+//     }
+// }
+
+// Implementing Logout Feature using Redis to invalidate the JWT token on the server side.
+//  This is a more secure approach than just clearing the cookie, as it ensures that the token cannot be used again even if it is still present in the client's cookies.
 const logoutUser = async (req,res)=>{
     try{
-        res.clearCookie('token');
+        // validating the Token using Middleware
+        const {token}=req.cookies;
+
+        // Adding the Token to the ReddisBlacklist to Invalidate it on the Server Side
+        
+        const payload = jwt.decode(token);
+        await redisClient.set(`token:${token}`, 'blocked'); // Set token as blocked
+        await redisClient.expireAt(`token:${token}`, payload.exp); // Set expiration time to match the token's expiration
+
+        res.cookie("Token",null,new Date(0)); // Clear the cookie by setting it to null and expiring it immediately
         res.status(200).send('User Logged out Successfully');
     }
     catch(err){
-        res.status(400).send('Error logging out user');
+        res.status(401).send('Error logging out user');
     }
 }
 

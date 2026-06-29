@@ -4,7 +4,7 @@ require('dotenv').config();
 const main= require('../config/DB');
 const cookieParser=require('cookie-parser');
 const authRouter=require("../routes/UserAuth");
-
+const RedisClient = require('../config/Redis');
 
 // To convert request body into json format
 app.use(express.json());
@@ -15,10 +15,10 @@ app.use(cookieParser());
 app.use("/user",authRouter);
 
 // To Connect MongoDB Database and Start the Server
-async function startServer(){
+const InitializeConnection= async ()=>{
     try{
-        await main();   
-        console.log("Database connected successfully");
+        await Promise.all([main(), RedisClient.connect()]);   
+        console.log("Databases connected successfully");
         app.listen(process.env.PORT, () => {
             console.log(`Server is running on port ${process.env.PORT}`);
         })
@@ -28,4 +28,4 @@ async function startServer(){
 }
 
 
-startServer();
+InitializeConnection();
