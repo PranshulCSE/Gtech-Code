@@ -3,6 +3,7 @@ const authRouter = express.Router();
 const { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail } = require('../controller/UserAuthenticate');
 const userMiddleware = require('../middlewares/Usermiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
+const {registerAdmin} = require('../controller/AdminAuthenticate');
 
 // Register User
 authRouter.post('/register', registerUser);
@@ -23,12 +24,9 @@ authRouter.post('/verify-email', verifyUserEmail);
 
 
 // Admin Routes
-// FIXED: `adminRegister` was never imported/defined anywhere -> Express throws immediately
-// on server startup ("Route.post() requires a callback function but got a [object Undefined]"),
-// which means the ENTIRE app fails to boot, not just this route.
-// Commented out until you create the admin controller. Once ready:
-//   const { adminRegister } = require('../controller/AdminController');
-// then uncomment the line below.
-// authRouter.post('/admin/register',adminMiddleware,adminRegister);
+
+// Registering Admin, But checking that if I am having the Admin Powers so we will use the Admin Middleware
+authRouter.post('/admin/register', adminMiddleware, registerAdmin)
+
 
 module.exports = authRouter;
