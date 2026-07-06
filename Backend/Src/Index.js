@@ -4,6 +4,7 @@ require('dotenv').config();
 const main= require('../config/DB');
 const cookieParser=require('cookie-parser');
 const authRouter=require("../routes/UserAuth");
+const ProblemRouter=require("../routes/ProblemStatement");
 const RedisClient = require('../config/Redis');
 
 // To convert request body into json format
@@ -13,6 +14,9 @@ app.use(cookieParser());
 
 // Routing user to Route
 app.use("/user",authRouter);
+
+// Routing user to Problem Statement Route
+app.use("/problem",ProblemRouter);
 
 // To Connect MongoDB Database and Start the Server
 const InitializeConnection= async ()=>{

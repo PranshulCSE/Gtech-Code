@@ -35,7 +35,7 @@ const resetPasswordTemplate = (resetUrl, userName = 'User') => `
           </tr>
           <tr>
             <td style="background:#f4f4f7; padding:15px; text-align:center;">
-              <p style="font-size:12px; color:#aaa; margin:0;">&copy; ${new Date().getFullYear()} SAJSSM. All rights reserved.</p>
+              <p style="font-size:12px; color:#aaa; margin:0;">&copy; ${new Date().getFullYear()} GTech-CODE. All rights reserved.</p>
             </td>
           </tr>
         </table>
