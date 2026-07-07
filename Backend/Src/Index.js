@@ -9,6 +9,7 @@ const RedisClient = require('../config/Redis');
 
 // To convert request body into json format
 app.use(express.json());
+
 // To convert cookies into json format
 app.use(cookieParser());
 

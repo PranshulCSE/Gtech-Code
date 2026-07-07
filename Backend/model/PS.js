@@ -37,7 +37,7 @@ const ProblemStatementSchema = new Schema({
                 type: String,
                 required: true
             },
-            explaination: {
+            explanation: {
                 type: String,
                 required: true
             }
@@ -74,7 +74,7 @@ const ProblemStatementSchema = new Schema({
     },
     ReferenceSolution: [
         {
-            languge: {
+            language: {
                 type: String,
                 required: true
             },
