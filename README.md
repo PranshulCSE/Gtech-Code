@@ -1,6 +1,6 @@
 # 🚀 GTech Code | MERN Stack Coding Platform
 
-GTech Code is a comprehensive, full-stack web application designed for developers to hone their coding skills, take challenges, participate in contests, and manage technical submissions. Built on the powerful **MERN Stack**, it features a secure, scalable backend and an intuitive frontend experience for seamless code practice.
+GTech Code is a comprehensive, full-stack web application designed for developers to hone their coding skills, take challenges, participate in contests, and manage technical submissions. Built on the powerful **MERN Stack**, it features a secure, scalable backend and an intuitive frontend experience for seamless code practice which i am going to implement in Geeta technical hub at Geeta University..
 
 ---
 
