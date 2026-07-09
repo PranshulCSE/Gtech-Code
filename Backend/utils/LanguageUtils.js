@@ -5,13 +5,13 @@ const  getLanguageById  = (Language)=>{
     }
     const languageMap = {
         'c': 50,
-        'c++': 54,
+        'cpp': 54,
         'java': 62,
         'javascript': 63,
         'python': 71,
-    };
+    }
 
-    return languageMap[Language.toLowerCase()] || null;
+    return languageMap[Language.toLowerCase()];
 }
 
 module.exports =  getLanguageById ;

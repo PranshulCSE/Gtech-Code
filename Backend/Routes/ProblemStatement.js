@@ -10,16 +10,16 @@ const { problemCreate} = require('../Controller/ProblemStatementController');
 // Creating Problem
 problemRouter.post("/create",adminMiddleware,problemCreate);
 // Updating Problem
-// problemRouter.patch("/update/:id",adminMiddleware,problemUpdate);
-// // Deleting Problem
-// problemRouter.delete("/delete/:id",adminMiddleware,problemDelete);
+problemRouter.patch("/update/:id",adminMiddleware,problemUpdate);
+// Deleting Problem
+problemRouter.delete("/delete/:id",adminMiddleware,problemDelete);
 
 
-// // Fetching the Problem by id
-// problemRouter.get("/fetch/:id", problemFetch);
-// // Fetching all Problems
-// problemRouter.get("/", problemFetchAll);
-// // Problem Solved By User
-// problemRouter.get("/user",solvedProblembyUser);
+// Fetching the Problem by id
+problemRouter.get("/fetch/:id", problemFetch);
+// Fetching all Problems
+problemRouter.get("/", problemFetchAll);
+// Problem Solved By User
+problemRouter.get("/user",solvedProblembyUser);
 
 module.exports = problemRouter;

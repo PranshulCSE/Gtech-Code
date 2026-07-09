@@ -24,7 +24,7 @@ const SubmitBatch=async (submissions)=>{
             const response = await axios.request(options);
             return response.data;
         } catch (error) {
-            throw new Error(`Error submitting batch: ${error.message}`);
+            throw new Error(` Error submitting batch: ${error.message}`);
         }
     }
 
@@ -39,8 +39,9 @@ const SubmitToken=async (tokens)=>{
         method: 'GET',
         url: process.env.JUDGE0_URL,
         params: {
-            base64_encoded: 'true',
-            tokens: tokens.join(',')
+            tokens: resultToken.join(","),
+            base64_encoded: 'false',
+            fields: '*'
         },
         headers: {
             'x-rapidapi-key': process.env.JUDGE0_API_KEY,
@@ -67,14 +68,12 @@ const result = await fetchData();
     }
    await waiting(2000);
 }
-}
 
-const waiting = async(ms)=>{
-    return new Promise((resolve) => {
-        setTimeout(()=>{
-            resolve(1);
-        },ms);
-    });
+}
+const waiting = async (timer) => {
+    setTimeout(() => {
+        return 1;
+    }, timer);
 }
 
 module.exports = {SubmitBatch, SubmitToken};
