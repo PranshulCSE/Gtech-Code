@@ -134,7 +134,7 @@ const problemFetch = async(req, res) => {
         if (!id) {
             return res.status(400).send("Problem Statement id is required");
         }
-        const problem = await ProblemStatement.findById(id);
+        const problem = await ProblemStatement.findById(id).select('-ReferenceSolution -createdBy -isApproved -isRejected');
         if (!problem) {
             return res.status(404).send("Problem Statement not found");
         }
@@ -148,7 +148,7 @@ const problemFetch = async(req, res) => {
 const problemFetchAll = async(req, res) => {
 
     try{
-        const problems = await ProblemStatement.find({});
+        const problems = await ProblemStatement.find({}).select('_id title description difficulty tags ');
         if(problems.length === 0){
             return res.status(404).send("No Problem Statements found");
         }
