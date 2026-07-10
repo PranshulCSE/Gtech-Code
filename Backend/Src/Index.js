@@ -13,6 +13,8 @@ app.use(express.json());
 // To convert cookies into json format
 app.use(cookieParser());
 
+app.use(json({ limit: '50mb' }));
+
 // Routing user to Route
 app.use("/user",authRouter);
 
@@ -28,7 +30,7 @@ const InitializeConnection= async ()=>{
             console.log(`Server is running on port ${process.env.PORT}`);
         })
     }catch(err){
-        console.log("Database connection failed", err);
+        console.log("Database connection failed ", err);
     }
 }
 
