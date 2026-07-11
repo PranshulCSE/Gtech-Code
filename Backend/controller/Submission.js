@@ -15,7 +15,6 @@ const submitCode = async (req, res) => {
             return res.status(400).send("Missing required fields");
         }
 
-        // FIX: added "await" here, without it Problem was a Promise, not the actual document
         const Problem = await ProblemStatement.findById(problemId);
         if (!Problem) {
             return res.status(404).send("Problem Statement not found");
