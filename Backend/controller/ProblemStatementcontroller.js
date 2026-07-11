@@ -103,7 +103,7 @@ const problemUpdate = async (req,res) => {
             ...req.body
         }, { runValidators: true , new: true });
 
-        res.status(200).send("Problem Statement updated successfully", updatedProblem);
+            res.status(200).json({ message: "Problem Statement updated successfully", updatedProblem });
     }
     catch(err){
         res.status(500).send("Error in updating problem" + err.message);

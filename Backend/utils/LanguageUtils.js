@@ -1,5 +1,5 @@
 
-const  getLanguageById  = (Language)=>{
+const getLanguageById = (Language) => {
     if (!Language || typeof Language !== 'string') {
         throw new Error('Invalid language');
     }
@@ -14,4 +14,4 @@ const  getLanguageById  = (Language)=>{
     return languageMap[Language.toLowerCase()];
 }
 
-module.exports =  getLanguageById ;
+module.exports = getLanguageById;
