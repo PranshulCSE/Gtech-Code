@@ -161,6 +161,17 @@ const problemFetchAll = async(req, res) => {
 
 const solvedProblembyUser = async(req, res) => {
 
+    try{
+        const userId = req.user._id;
+        const user = await User.findById(userId).populate({
+            path: 'problemsolved',
+            select: '_id title description difficulty tags'
+        });
+        res.status(200).send(user.problemsolved);
+    }
+    catch(err){
+        res.status(500).send("Error in fetching solved problems by user" + err.message);
+    }
 }
 
 module.exports = { problemCreate, problemUpdate, problemDelete, problemFetch, problemFetchAll, solvedProblembyUser };
