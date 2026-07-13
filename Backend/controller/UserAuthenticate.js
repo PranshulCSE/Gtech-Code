@@ -9,7 +9,6 @@ const sendEmail = require('../utils/sendEmail'); // NEW: small mailer utility ->
 
 
 // Register User
-
 const registerUser = async (req, res) => {
     try {
         ValidateUser(req.body);
@@ -35,7 +34,6 @@ const registerUser = async (req, res) => {
 }
 
 // Login User
-
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
