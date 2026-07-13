@@ -1,6 +1,6 @@
 const express = require('express');
 const authRouter = express.Router();
-const { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail } = require('../controller/UserAuthenticate');
+const { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail, deleteUserProfile } = require('../controller/UserAuthenticate');
 const userMiddleware = require('../middlewares/Usermiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const {registerAdmin} = require('../controller/AdminAuthenticate');
@@ -13,12 +13,14 @@ authRouter.post('/login', loginUser);
 authRouter.post('/logout', userMiddleware, logoutUser);
 // Get User Profile
 authRouter.get('/profile', userMiddleware, getUserProfile);
+// Delete User Profile
+authRouter.delete('/deleteprofile', userMiddleware, deleteUserProfile); 
 
 
 // Reset Password (public - no auth needed, user isn't logged in when resetting)
 authRouter.post('/reset-password', resetPassword);
 // Update User Profile
-authRouter.put('/profile', userMiddleware, updateUserProfile); // FIXED: userMiddleware was missing -> req.user would be undefined inside updateUserProfile, causing a crash, and also let anyone (even logged-out users) hit this route.
+authRouter.put('/profile', userMiddleware, updateUserProfile); 
 // Verify User Email (public - user clicks link from email, isn't logged in yet)
 authRouter.post('/verify-email', verifyUserEmail);
 

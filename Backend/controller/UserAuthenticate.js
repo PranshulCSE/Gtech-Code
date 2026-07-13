@@ -1,4 +1,5 @@
 const user = require('../model/User');
+const submission = require('../model/Submission');
 const ValidateUser = require('../utils/Validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -255,4 +256,28 @@ const verifyUserEmail = async (req, res) => {
     }
 }
 
-module.exports = { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail };
+// Delete User Profile
+// Deleting User by its ID.
+const deleteUserProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const deletedUser = await user.findByIdAndDelete({ _id: userId });
+        if (!deletedUser) {
+            return res.status(404).send('User not found');
+        }
+        // Deleting the user's session token from Redis to ensure they are logged out after deletion
+        const { token } = req.cookies;
+        if (token) {
+            await redisClient.del(`token:${token}`);
+        }
+        // Deleting all the user Submissions from the database
+        // We are having a  Submission model and it has a reference to the user
+        // await Submission.deleteMany({ userId });
+        res.status(200).send('User profile deleted successfully');
+    }
+    catch (err) {
+        res.status(400).send('Error deleting profile: ' + err.message);
+    }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail, deleteUserProfile };
