@@ -174,4 +174,19 @@ const solvedProblembyUser = async(req, res) => {
     }
 }
 
-module.exports = { problemCreate, problemUpdate, problemDelete, problemFetch, problemFetchAll, solvedProblembyUser };
+const submissionbyUser = async(req, res) => {
+    try{
+        const userId = req.user._id;
+        const problemId = req.params.id;
+        const submissions = await Submission.find({ userId, problemId });
+        if(submissions.length === 0){
+            return res.status(404).send("No submissions found for this problem by the user");
+        }
+        res.status(200).send(submissions);
+    }
+    catch(err){
+        res.status(500).send("Error in fetching submissions by user" + err.message);
+    }
+}
+
+module.exports = { problemCreate, problemUpdate, problemDelete, problemFetch, problemFetchAll, solvedProblembyUser, submissionbyUser };
