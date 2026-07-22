@@ -1,4 +1,4 @@
-const  getLanguageById  = require('../Utils/LanguageUtils');
+const getLanguageById = require('../Utils/LanguageUtils');
 const { SubmitBatch, SubmitToken } = require('../Utils/SubmitBatch');
 const ProblemStatement = require('../model/PS');
 
@@ -55,18 +55,18 @@ const problemCreate = async (req, res) => {
     }
 }
 
-const problemUpdate = async (req,res) => {
- const { id } = req.params;
+const problemUpdate = async (req, res) => {
+    const { id } = req.params;
 
     const { title, description, difficulty, tags, VisibletestCases, InvisibletestCases, BoilerplateCode, createdBy, ReferenceSolution, isApproved, isRejected } = req.body;
-        try{
-            if(!id){
-                return res.status(400).send("Problem Statement id is required");
-            }
-            const problem = await ProblemStatement.findById(id);
-            if(!problem){
-                return res.status(404).send("Problem Statement not found");
-            }
+    try {
+        if (!id) {
+            return res.status(400).send("Problem Statement id is required");
+        }
+        const problem = await ProblemStatement.findById(id);
+        if (!problem) {
+            return res.status(404).send("Problem Statement not found");
+        }
 
         for (const { language, code } of ReferenceSolution) {
             if (!language || !code) {
@@ -101,34 +101,34 @@ const problemUpdate = async (req,res) => {
 
         const updatedProblem = await ProblemStatement.findByIdAndUpdate(id, {
             ...req.body
-        }, { runValidators: true , new: true });
+        }, { runValidators: true, returnDocument: 'after' });
 
-            res.status(200).json({ message: "Problem Statement updated successfully", updatedProblem });
+        res.status(200).json({ message: "Problem Statement updated successfully", updatedProblem });
     }
-    catch(err){
+    catch (err) {
         res.status(500).send("Error in updating problem" + err.message);
     }
 }
 
-const problemDelete = async (req,res) => {
+const problemDelete = async (req, res) => {
     const { id } = req.params;
-    try{
-        if(!id){
+    try {
+        if (!id) {
             return res.status(400).send("Problem Statement id is required");
         }
         const problem = await ProblemStatement.findById(id);
-        if(!problem){
+        if (!problem) {
             return res.status(404).send("Problem Statement not found");
         }
         await ProblemStatement.findByIdAndDelete(id);
         res.status(200).send("Problem Statement deleted successfully");
     }
-    catch(err){
+    catch (err) {
         res.status(500).send("Error in deleting problem" + err.message);
     }
 }
 
-const problemFetch = async(req, res) => {
+const problemFetch = async (req, res) => {
     const { id } = req.params;
     try {
         if (!id) {
@@ -145,23 +145,23 @@ const problemFetch = async(req, res) => {
     }
 }
 
-const problemFetchAll = async(req, res) => {
+const problemFetchAll = async (req, res) => {
 
-    try{
+    try {
         const problems = await ProblemStatement.find({}).select('_id title description difficulty tags ');
-        if(problems.length === 0){
+        if (problems.length === 0) {
             return res.status(404).send("No Problem Statements found");
         }
         res.status(200).send(problems);
     }
-    catch(err){
+    catch (err) {
         res.status(500).send("Error in fetching all problems" + err.message);
     }
 }
 
-const solvedProblembyUser = async(req, res) => {
+const solvedProblembyUser = async (req, res) => {
 
-    try{
+    try {
         const userId = req.user._id;
         const user = await User.findById(userId).populate({
             path: 'problemsolved',
@@ -169,22 +169,22 @@ const solvedProblembyUser = async(req, res) => {
         });
         res.status(200).send(user.problemsolved);
     }
-    catch(err){
+    catch (err) {
         res.status(500).send("Error in fetching solved problems by user" + err.message);
     }
 }
 
-const submissionbyUser = async(req, res) => {
-    try{
+const submissionbyUser = async (req, res) => {
+    try {
         const userId = req.user._id;
         const problemId = req.params.id;
         const submissions = await Submission.find({ userId, problemId });
-        if(submissions.length === 0){
+        if (submissions.length === 0) {
             return res.status(404).send("No submissions found for this problem by the user");
         }
         res.status(200).send(submissions);
     }
-    catch(err){
+    catch (err) {
         res.status(500).send("Error in fetching submissions by user" + err.message);
     }
 }

@@ -5,16 +5,21 @@ const sendEmail = async ({ to, subject, text, html }) => {
         throw new Error('Email credentials are not configured');
     }
 
+    const emailUser = process.env.EMAIL_USER.trim();
+    const emailPass = process.env.EMAIL_PASS.replace(/\s+/g, '');
+
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            user: emailUser,
+            pass: emailPass
         }
     });
 
     return transporter.sendMail({
-        from: process.env.EMAIL_USER,
+        from: emailUser,
         to,
         subject,
         text,

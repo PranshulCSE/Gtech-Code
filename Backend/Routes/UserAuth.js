@@ -3,7 +3,7 @@ const authRouter = express.Router();
 const { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail, deleteUserProfile } = require('../controller/UserAuthenticate');
 const userMiddleware = require('../middlewares/Usermiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
-const {registerAdmin} = require('../controller/AdminAuthenticate');
+const { registerAdmin } = require('../controller/AdminAuthenticate');
 
 // Register User
 authRouter.post('/register', registerUser);
@@ -14,15 +14,16 @@ authRouter.post('/logout', userMiddleware, logoutUser);
 // Get User Profile
 authRouter.get('/profile', userMiddleware, getUserProfile);
 // Delete User Profile
-authRouter.delete('/deleteprofile', userMiddleware, deleteUserProfile); 
+authRouter.delete('/deleteprofile', userMiddleware, deleteUserProfile);
 
 
 // Reset Password (public - no auth needed, user isn't logged in when resetting)
 authRouter.post('/reset-password', resetPassword);
 // Update User Profile
-authRouter.put('/profile', userMiddleware, updateUserProfile); 
-// Verify User Email (public - user clicks link from email, isn't logged in yet)
+authRouter.put('/profile', userMiddleware, updateUserProfile);
+// Verify User Email (supports /verify-email and /verify-email/:token)
 authRouter.post('/verify-email', verifyUserEmail);
+authRouter.post('/verify-email/:token', verifyUserEmail);
 
 
 // Admin Routes

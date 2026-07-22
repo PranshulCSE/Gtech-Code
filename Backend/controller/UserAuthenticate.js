@@ -1,11 +1,12 @@
 const user = require('../model/User');
-const submission = require('../model/Submission');
+const submission = require('../model/submission');
 const ValidateUser = require('../utils/Validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); // NEW: needed for generating reset/verify tokens
 const redisClient = require('../config/Redis'); // FIXED: was used in logoutUser but never imported -> ReferenceError. Path matched to actual location: config/Redis.js (same file userMiddleware.js uses).
 const sendEmail = require('../utils/sendEmail'); // NEW: small mailer utility -> code given separately, add this file yourself
+const { verificationEmailTemplate } = require('../utils/emailTemplates');
 
 
 // Register User
@@ -20,13 +21,38 @@ const registerUser = async (req, res) => {
 
         req.body.role = 'user'; // Assigning the role as 'user' for all new registrations
 
-        const newUser = await user.create({ ...req.body, password: hashedPassword });
+        const rawVerificationToken = crypto.randomBytes(32).toString('hex');
+        const hashedVerificationToken = crypto.createHash('sha256').update(rawVerificationToken).digest('hex');
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+
+        const newUser = await user.create({
+            ...req.body,
+            password: hashedPassword,
+            verificationToken: hashedVerificationToken,
+            verificationTokenExpire: Date.now() + 24 * 60 * 60 * 1000
+        });
 
         const token = jwt.sign({ _id: newUser._id, email: newUser.email, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
 
-        res.status(201).send('User Registered Successfully');
+        const verificationUrl = `${clientUrl}/verify-email/${rawVerificationToken}`;
+
+        await sendEmail({
+            to: newUser.email,
+            subject: 'Verify Your Email',
+            text: `Please verify your email within 24 hours: ${verificationUrl}`,
+            html: verificationEmailTemplate(verificationUrl, newUser.firstname)
+        });
+
+        // Extracting Password
+        const UserWithoutPassword = newUser.toObject();
+        delete UserWithoutPassword.password;
+        delete UserWithoutPassword.verificationToken;
+        res.status(201).send({
+            user: UserWithoutPassword,
+            message: 'User Registered Successfully. Please verify your email.'
+        })
     }
     catch (err) {
         res.status(400).send('Error registering user: ' + err.message); // FIXED: was concatenating raw err object -> showed "[object Object]"/stack leak to client. Use err.message.
@@ -59,7 +85,13 @@ const loginUser = async (req, res) => {
         //   Setting the token in the Cookie and Setting its MaxAge to 1 hour
         res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
 
-        res.status(200).send('User Logged in Successfully');
+        // Extracting Password
+        const UserWithoutPassword = existingUser.toObject();
+        delete UserWithoutPassword.password;
+        res.status(201).send({
+            user: UserWithoutPassword,
+            message: 'User Logged in Successfully'
+        })
     }
 
     catch (err) {
@@ -176,12 +208,14 @@ const resetPassword = async (req, res) => {
         existingUser.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
         await existingUser.save();
 
-        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${rawToken}`;
+        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
 
         await sendEmail({
             to: existingUser.email,
             subject: 'Password Reset Request',
-            text: `Click the link to reset your password (valid for 15 minutes): ${resetUrl}`
+            text: `Click the link to reset your password (valid for 15 minutes): ${resetUrl}`,
+            html: `<p>Click the link below to reset your password. This link is valid for 15 minutes.</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
         });
 
         res.status(200).send('If that email is registered, a reset link has been sent');
@@ -212,7 +246,7 @@ const updateUserProfile = async (req, res) => {
             return res.status(400).send('No valid fields provided to update');
         }
 
-        const updatedUser = await user.findByIdAndUpdate(userId, updates, { new: true, runValidators: true }).select('-password');
+        const updatedUser = await user.findByIdAndUpdate(userId, updates, { runValidators: true, returnDocument: 'after' }).select('-password');
 
         if (!updatedUser) {
             return res.status(404).send('User not found');
@@ -231,13 +265,18 @@ const updateUserProfile = async (req, res) => {
 // isVerified (Boolean), verificationToken (String)
 const verifyUserEmail = async (req, res) => {
     try {
-        const token = req.params.token || req.query.token;
+        const token = req.params.token || req.query.token || req.body.token;
 
         if (!token) {
             return res.status(400).send('Verification token is required');
         }
 
-        const existingUser = await user.findOne({ verificationToken: token });
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const existingUser = await user.findOne({
+            verificationToken: hashedToken,
+            verificationTokenExpire: { $gt: Date.now() }
+        });
 
         if (!existingUser) {
             return res.status(400).send('Invalid or expired verification token');
@@ -245,6 +284,7 @@ const verifyUserEmail = async (req, res) => {
 
         existingUser.isVerified = true;
         existingUser.verificationToken = undefined;
+        existingUser.verificationTokenExpire = undefined;
         await existingUser.save();
 
         res.status(200).send('Email verified successfully');

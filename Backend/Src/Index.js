@@ -7,14 +7,13 @@ const authRouter=require("../routes/UserAuth");
 const submitRouter = require("../routes/Submit");
 const ProblemRouter=require("../routes/ProblemStatement");
 const RedisClient = require('../config/Redis');
+const User = require('../model/User');
 
 // To convert request body into json format
 app.use(express.json());
 
 // To convert cookies into json format
 app.use(cookieParser());
-
-app.use(json({ limit: '50mb' }));
 
 // Routing user to Route
 app.use("/user",authRouter);
@@ -29,6 +28,7 @@ app.use("/submission",submitRouter);
 const InitializeConnection= async ()=>{
     try{
         await Promise.all([main(), RedisClient.connect()]);   
+        await User.syncIndexes();
         console.log("Databases connected successfully");
         app.listen(process.env.PORT, () => {
             console.log(`Server is running on port ${process.env.PORT}`);

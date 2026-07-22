@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const Submission = require('./Submission');
+const Submission = require('./submission');
 
 const UserSchema = new Schema({
     firstname: {
@@ -33,11 +33,11 @@ const UserSchema = new Schema({
         default: "user"
     },
     problemsolved: {
-        type:[{
+        type: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'ProblemStatement'
         }],
-        unique: true
+        default: []
     },
     password: {
         type: String,
@@ -46,20 +46,23 @@ const UserSchema = new Schema({
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     isVerified: {
-         type: Boolean, 
-         default: false 
-        },
+        type: Boolean,
+        default: false
+    },
     verificationToken: String,
+    verificationTokenExpire: Date,
 
 }, { timestamps: true });
 
-User.post('findOneAndDelete', async function(doc) {
-    if (doc) {
-      await mongoose.model('Submission').deleteMany({ userId: doc._id });
-    }
-    });
 
 // Here the above function is post function which is executed after the opeartion ends and it will delete all the submissions of the user when the user is deleted from the database.
 
+UserSchema.post('findOneAndDelete', async function (doc) {
+    if (doc) {
+        await Submission.deleteMany({ userId: doc._id });
+    }
+});
+
 const User = mongoose.model("User", UserSchema);
+
 module.exports = User;
