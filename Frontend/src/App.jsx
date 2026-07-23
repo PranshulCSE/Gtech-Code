@@ -4,10 +4,21 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import ResetPassword from './pages/ResetPassword'
 import ForgotPassword from './pages/ForgotPassword'
+import {checkAuth} from '../authSlice';
+import {useDispatch, useSelector } from 'react-redux'
+import {useEffect } from "react";
 
 
 function App() {
 
+  // Checking if the User is Authenticated or not
+  const {isAuthenticated} = useSelector ((state)=> state.auth);
+  const dispatch = useDispatch();
+
+
+  useEffect(()=>{
+    dispatch (checkAuth());
+  },[isAuthenticated])
 
   return (
     <>

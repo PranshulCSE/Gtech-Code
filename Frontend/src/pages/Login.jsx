@@ -35,7 +35,7 @@ function Login() {
                                 type="email"
                                 placeholder="john@example.com"
                                 className={`input input-bordered ${errors.emailId && 'input-error'}`}
-                                {...register('emailId')}
+                                {...register('email')}
                             />
                             {errors.emailId && (
                                 <span className="text-error">{errors.emailId.message}</span>

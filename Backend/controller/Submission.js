@@ -1,7 +1,7 @@
 
 const ProblemStatement = require("../model/PS");
 const Submission = require("../model/submission");
-const getLanguageById = require('../Utils/LanguageUtils');
+const getLanguageById = require('../utils/LanguageUtils');
 const { SubmitBatch, SubmitToken } = require('../Utils/SubmitBatch');
 
 const submitCode = async (req, res) => {
@@ -95,9 +95,9 @@ const submitCode = async (req, res) => {
 
         // Checking if the Solution is Present in DB if not then we will save it related to the problem statement
 
-       if(! req.result.problemSolved.includes(problemId)) {
-         req.result.problemSolved.push(problemId);
-         await req.result.save();
+       if(! req.user.problemSolved.includes(problemId)) {
+         req.user.problemSolved.push(problemId);
+         await req.user.save();
        }
 
         res.status(201).send(submittedResult);

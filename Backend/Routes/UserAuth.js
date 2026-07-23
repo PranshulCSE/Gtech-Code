@@ -25,6 +25,17 @@ authRouter.put('/profile', userMiddleware, updateUserProfile);
 authRouter.post('/verify-email', verifyUserEmail);
 authRouter.post('/verify-email/:token', verifyUserEmail);
 
+authRouter.get('/check', userMiddleware , async (req,res)=>{
+        // Our Auth middleware attaches the decoded token payload to req.user
+        const userId = req.user._id;
+
+        const foundUser = await user.findById(userId).select('-password'); // Exclude password from the return data
+        if (!foundUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(foundUser);
+})
 
 // Admin Routes
 

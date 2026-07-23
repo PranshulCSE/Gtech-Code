@@ -6,12 +6,14 @@ import {z} from "zod";
 // Schema Validation for Signup Form 
 
 const SignUpSchema = z.object({
-    firstName: z.string().min(3, "Name should contain atleast 3 Characters").max("Name is too much Long"),
-    email: z.string().email(),
-    password:z.string().min(8,"Password must contain atleast 8 Characters"),
-    confirmPassword:z.string().min(8,"Password doesn't match")
-
-})
+    firstName: z.string().min(3, "Name should contain atleast 3 Characters").max(30, "Name is too much Long"),
+    emailId: z.string().email("Invalid email"),
+    password: z.string().min(8, "Password must contain atleast 8 Characters"),
+    confirmPassword: z.string().min(8, "Password must contain atleast 8 Characters")
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"]
+});
 
 const signup=()=>{
     
@@ -37,7 +39,7 @@ const signup=()=>{
                                     type="text"
                                     placeholder="Enter your First Name here"
                                     className={`input input-bordered ${errors.firstName && 'input-error'}`}
-                                    {...register('firstName')}
+                                    {...register('firstname')}
                                 />
                                 {errors.firstName && (
                                     <span className="text-error">{errors.firstName.message}</span>
