@@ -9,7 +9,7 @@ const SubmitBatch = async (submissions) => {
         method: 'POST',
         url: process.env.JUDGE0_URL,
         params: {
-            base64_encoded: 'true'
+            base64_encoded: 'false'
         },
         headers: {
             'x-rapidapi-key': process.env.JUDGE0_API_KEY,

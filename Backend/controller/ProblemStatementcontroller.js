@@ -1,4 +1,4 @@
-const getLanguageById = require('../Utils/LanguageUtils');
+const getLanguageById = require('../utils/LanguageUtils');
 const { SubmitBatch, SubmitToken } = require('../utils/SubmitBatch');
 const ProblemStatement = require('../model/PS');
 const User = require('../model/User');
@@ -8,6 +8,13 @@ const Submission = require('../model/submission');
 const problemCreate = async (req, res) => {
     const { title, description, difficulty, tags, VisibletestCases, InvisibletestCases, BoilerplateCode, createdBy, ReferenceSolution, isApproved, isRejected } = req.body;
     try {
+        if (!ReferenceSolution || !Array.isArray(ReferenceSolution)) {
+            return res.status(400).send("Reference Solution is required and must be an array");
+        }
+        if (!VisibletestCases || !Array.isArray(VisibletestCases)) {
+            return res.status(400).send("Visible test cases are required and must be an array");
+        }
+
         for (const { language, code } of ReferenceSolution) {
             // Source Code
             // Language id
@@ -70,33 +77,45 @@ const problemUpdate = async (req, res) => {
             return res.status(404).send("Problem Statement not found");
         }
 
-        for (const { language, code } of ReferenceSolution) {
-            if (!language || !code) {
-                return res.status(400).send("Reference Solution is missing language or code");
+        if (ReferenceSolution !== undefined || VisibletestCases !== undefined) {
+            const finalSolutions = ReferenceSolution !== undefined ? ReferenceSolution : problem.ReferenceSolution;
+            const finalTestCases = VisibletestCases !== undefined ? VisibletestCases : problem.VisibletestCases;
+
+            if (!Array.isArray(finalSolutions)) {
+                return res.status(400).send("Reference Solution must be an array");
+            }
+            if (!Array.isArray(finalTestCases)) {
+                return res.status(400).send("Visible test cases must be an array");
             }
 
-            const languageId = getLanguageById(language);
+            for (const { language, code } of finalSolutions) {
+                if (!language || !code) {
+                    return res.status(400).send("Reference Solution is missing language or code");
+                }
 
-            // Creating Submission Array for Batch Submission for Judge Zero
-            const submissions = VisibletestCases.map((testcases) => ({
-                source_code: code,
-                language_id: languageId,
-                stdin: testcases.input,
-                expected_output: testcases.output
-            }));
+                const languageId = getLanguageById(language);
 
-            // Sending Batch Submission to Judge Zero
-            const SubmitResult = await SubmitBatch(submissions);
+                // Creating Submission Array for Batch Submission for Judge Zero
+                const submissions = finalTestCases.map((testcases) => ({
+                    source_code: code,
+                    language_id: languageId,
+                    stdin: testcases.input,
+                    expected_output: testcases.output
+                }));
 
-            const resultToken = SubmitResult.map((result) => result.token);
-            // Creating Array of Tokens for Judge Zero to get the result of each submission
-            const result = await SubmitToken(resultToken);
+                // Sending Batch Submission to Judge Zero
+                const SubmitResult = await SubmitBatch(submissions);
 
-            // Submitting Array of tokens to get Actual Result
+                const resultToken = SubmitResult.map((result) => result.token);
+                // Creating Array of Tokens for Judge Zero to get the result of each submission
+                const result = await SubmitToken(resultToken);
 
-            for (const test of result) {
-                if (test.status.id !== 3) {
-                    return res.status(400).send(`Reference Solution failed for test case with input: ${test.stdin}. Error: ${test.stderr}`);
+                // Submitting Array of tokens to get Actual Result
+
+                for (const test of result) {
+                    if (test.status.id !== 3) {
+                        return res.status(400).send(`Reference Solution failed for test case with input: ${test.stdin}. Error: ${test.stderr}`);
+                    }
                 }
             }
         }

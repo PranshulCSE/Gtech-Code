@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); // NEW: needed for generating reset/verify tokens
 const redisClient = require('../config/Redis'); // FIXED: was used in logoutUser but never imported -> ReferenceError. Path matched to actual location: config/Redis.js (same file userMiddleware.js uses).
 const sendEmail = require('../utils/sendEmail'); // NEW: small mailer utility -> code given separately, add this file yourself
-const { verificationEmailTemplate } = require('../utils/emailTemplates');
+const { verificationEmailTemplate, resetPasswordTemplate } = require('../utils/emailTemplates');
 
 
 // Register User
@@ -215,7 +215,7 @@ const resetPassword = async (req, res) => {
             to: existingUser.email,
             subject: 'Password Reset Request',
             text: `Click the link to reset your password (valid for 15 minutes): ${resetUrl}`,
-            html: `<p>Click the link below to reset your password. This link is valid for 15 minutes.</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+            html: resetPasswordTemplate(resetUrl, existingUser.firstname)
         });
 
         res.status(200).send('If that email is registered, a reset link has been sent');
@@ -299,7 +299,7 @@ const verifyUserEmail = async (req, res) => {
 const deleteUserProfile = async (req, res) => {
     try {
         const userId = req.user._id;
-        const deletedUser = await user.findByIdAndDelete({ _id: userId });
+        const deletedUser = await user.findByIdAndDelete(userId);
         if (!deletedUser) {
             return res.status(404).send('User not found');
         }

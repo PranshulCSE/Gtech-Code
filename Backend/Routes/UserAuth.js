@@ -4,6 +4,7 @@ const { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, upda
 const userMiddleware = require('../middlewares/Usermiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const { registerAdmin } = require('../controller/AdminAuthenticate');
+const user = require ('../model/User');
 
 // Register User
 authRouter.post('/register', registerUser);
