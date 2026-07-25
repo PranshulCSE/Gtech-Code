@@ -10,7 +10,7 @@ const RedisClient = require('../config/Redis');
 const User = require('../model/User');
 const cors = require('cors');
 
-const clientOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+const clientOrigin = process.env.CLIENT_URL;
 
 // To allow cross origin requests from frontend
 app.use(cors({

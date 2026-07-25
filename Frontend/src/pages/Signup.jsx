@@ -20,6 +20,7 @@ const SignUpSchema = z.object({
 
 const signup=()=>{
     const [showPassword, setShowPassword] = useState(false);
+    const [showconfirmPassword, setShowconfirmPassword] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { isAuthenticated, loading } = useSelector((state) => state.auth); // Removed error as it wasn't used
@@ -119,7 +120,7 @@ const signup=()=>{
                              </label>
                              <div className="relative">
                                  <input
-                                     type={showPassword ? "text" : "password"}
+                                     type={showconfirmPassword ? "text" : "password"}
                                      placeholder="••••••••"
                                      // Added pr-10 (padding-right) to make space for the button
                                      className={`input input-bordered w-full pr-10 ${errors.confirmPassword ? 'input-error' : ''}`}
@@ -128,10 +129,10 @@ const signup=()=>{
                                  <button
                                      type="button"
                                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700" // Added transform for better centering, styling
-                                     onClick={() => setShowPassword(!showPassword)}
-                                     aria-label={showPassword ? "Hide password" : "Show password"} // Accessibility
+                                     onClick={() => setShowconfirmPassword(!showconfirmPassword)}
+                                     aria-label={showconfirmPassword ? "Hide password" : "Show password"} // Accessibility
                                  >
-                                     {showPassword ? (
+                                     {showconfirmPassword ? (
                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                          </svg>
@@ -177,33 +178,3 @@ const signup=()=>{
 
 export default signup
 
-
-// function Signup() {
-//     const [name, setName] = useState('');
-//     const [email, setEmail] = useState('');
-//     const [password, setPassword] = useState('');
-//     const [confirmpassword, setConfirmPassword] = useState('');
-
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-//         // console.log(name, email, password);
-//         // Validation
-//         // Validating Form Data for Submission
-//         // Submission to Backend
-
-//     }
-
-//     return (
-//         <div>
-//             <form onSubmit={handleSubmit} className=" min-h-screen flex flex-col justify-center items-center gap-y-2 ">
-//                 <input type="text" value={name} placeholder="Enter Your First Name" onChange={(e) => setName(e.target.value)}></input>
-//                 <input type="email" value={email} placeholder="Enter Your Email" onChange={(e) => setEmail(e.target.value)}></input>
-//                 <input type="password" value={password} placeholder="Enter Your Password" onChange={(e) => setPassword(e.target.value)}></input>
-//                 <input type="password" value={confirmpassword} placeholder="Enter Your Password Again!!" onChange={(e) => setConfirmPassword(e.target.value)}></input>
-
-
-//                 <button type="submit">Sign Up</button>
-//             </form>
-//         </div>
-//     )
-// }
