@@ -27,7 +27,7 @@ const ProblemStatementSchema = new Schema({
         enum: ["arrays", "strings", "maths", "dynamic programming", "greedy", "graphs", "trees", "hashing", "recursion", "backtracking", "sorting", "searching", "bit manipulation", "linked list", "stack", "queue", "heap", "trie", "dp on trees", "dp on graphs"]
 
     },
-    VisibletestCases: [
+    VisibleTestCases: [
         {
             input: {
                 type: String,
@@ -43,7 +43,7 @@ const ProblemStatementSchema = new Schema({
             }
         }
     ],
-    InvisibletestCases: [
+    InvisibleTestCases: [
         {
             input: {
                 type: String,

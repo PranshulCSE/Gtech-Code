@@ -31,6 +31,7 @@ authRouter.get('/check', userMiddleware , async (req,res)=>{
         const userId = req.user._id;
 
         const foundUser = await user.findById(userId).select('-password'); // Exclude password from the return data
+        const reply = {...foundUser,"role":req.result.role};
         if (!foundUser) {
             return res.status(404).json({ message: 'User not found' });
         }
