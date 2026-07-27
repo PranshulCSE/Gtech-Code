@@ -7,7 +7,7 @@ const SubmitBatch = async (submissions) => {
 
     const options = {
         method: 'POST',
-        url: process.env.JUDGE0_URL,
+        url: process.env.JUDGE0_URL + '/submissions/batch',
         params: {
             base64_encoded: 'false'
         },
@@ -39,7 +39,7 @@ const SubmitToken = async (tokens) => {
 
     const options = {
         method: 'GET',
-        url: process.env.JUDGE0_URL,
+        url: process.env.JUDGE0_URL + '/submissions/batch',
         params: {
             // FIX: "resultToken" wala variable yahan exist hi nahi karta tha (wo caller ka local variable tha)
             // function ka apna parameter "tokens" use karna tha

@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from "react";
 import Homepage from './pages/Homepage'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -7,17 +9,12 @@ import ForgotPassword from './pages/ForgotPassword'
 import AdminPanel from './pages/AdminPanel'
 import VerifyEmail from './pages/VerifyEmail'
 import { checkAuth } from '../authSlice';
-import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from "react";
-
-
+import ProblemPage from './pages/ProblemPage'
 
 function App() {
-
   // Checking if the User is Authenticated or not
   const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     dispatch(checkAuth());
@@ -34,6 +31,7 @@ function App() {
         <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path="/admin" element={<AdminPanel/>}></Route>
         {/* <Route path="/admin" element={ isAuthenticated && user?.role === 'admin' ? <AdminPanel /> : <Navigate to="/" /> } /> */}
+        <Route path="/problem/:problemid" element={<ProblemPage/>} />
       </Routes>
     </>
   )

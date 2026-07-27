@@ -15,6 +15,10 @@ const submitCode = async (req, res) => {
             return res.status(400).send("Missing required fields");
         }
 
+        if (language === 'cpp')
+            language = 'c++'
+
+
         const Problem = await ProblemStatement.findById(problemId);
         if (!Problem) {
             return res.status(404).send("Problem Statement not found");
@@ -94,12 +98,17 @@ const submitCode = async (req, res) => {
         await submittedResult.save();
 
         // Checking if the Solution is Present in DB if not then we will save it related to the problem statement
-        if(status === 'accepted' && !req.user.problemsolved.includes(problemId)) {
-          req.user.problemsolved.push(problemId);
-          await req.user.save();
+        if (status === 'accepted' && !req.user.problemsolved.includes(problemId)) {
+            req.user.problemsolved.push(problemId);
+            await req.user.save();
         }
-
-        res.status(201).send(submittedResult);
+        res.status(201).json({
+            accepted,
+            totalTestCases: submittedResult.testCasesTotal,
+            passedTestCases: testCasesPassed,
+            runtime,
+            memory
+        });
 
     }
     catch (err) {
@@ -122,6 +131,8 @@ const runCode = async (req, res) => {
             return res.status(404).send("Problem Statement not found");
         }
 
+        if (language === 'cpp')
+            language = 'c++'
 
         // Submitting Code to Judge0
 
@@ -144,7 +155,35 @@ const runCode = async (req, res) => {
         const result = await SubmitToken(resultToken);
 
 
-        res.status(201).send(result);
+        let testCasesPassed = 0;
+        let runtime = 0;
+        let memory = 0;
+        let status = true;
+        let errorMessage = null;
+
+        for (const test of result) {
+            if (test.status_id == 3) {
+                testCasesPassed++;
+                runtime = runtime + parseFloat(test.time)
+                memory = Math.max(memory, test.memory);
+            } else {
+                if (test.status_id == 4) {
+                    status = false
+                    errorMessage = test.stderr
+                }
+                else {
+                    status = false
+                    errorMessage = test.stderr
+                }
+            }
+        }
+
+        res.status(201).json({
+            success: status,
+            testCases: testResult,
+            runtime,
+            memory
+        });
 
     }
     catch (err) {
@@ -152,4 +191,4 @@ const runCode = async (req, res) => {
     }
 }
 
-module.exports = { submitCode , runCode };
+module.exports = { submitCode, runCode };
