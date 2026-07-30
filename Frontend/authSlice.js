@@ -58,10 +58,14 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     isAuthenticated: false,
+    checkingAuth: true,
     loading: false,
     error: null
   },
   reducers: {
+    clearAuthError(state) {
+      state.error = null;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -77,7 +81,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.error = action.payload || 'Something went wrong';
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -94,24 +98,24 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.error = action.payload || 'Something went wrong';
         state.isAuthenticated = false;
         state.user = null;
       })
 
       // Check Auth Cases
       .addCase(checkAuth.pending, (state) => {
-        state.loading = true;
+        state.checkingAuth = true;
         state.error = null;
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
-        state.loading = false;
+        state.checkingAuth = false;
         state.isAuthenticated = !!action.payload;
         state.user = action.payload;
       })
       .addCase(checkAuth.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.checkingAuth = false;
+        state.error = action.payload || 'Something went wrong';
         state.isAuthenticated = false;
         state.user = null;
       })
@@ -129,11 +133,12 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'Something went wrong';
+        state.error = action.payload || 'Something went wrong';
         state.isAuthenticated = false;
         state.user = null;
       });
   }
 });
 
+export const { clearAuthError } = authSlice.actions;
 export default authSlice.reducer;

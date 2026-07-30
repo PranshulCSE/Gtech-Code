@@ -18,11 +18,15 @@ problemRouter.delete("/delete/:id", adminMiddleware, problemDelete);
 
 // Fetching the Problem by id
 problemRouter.get("/fetch/:id", UserMiddleware, problemFetch);
+problemRouter.get("/problemById/:id", UserMiddleware, problemFetch);
 // Fetching all Problems
 problemRouter.get("/", UserMiddleware, problemFetchAll);
+problemRouter.get("/getAllProblem", UserMiddleware, problemFetchAll);
 // Problem Solved By User
 problemRouter.get("/user", UserMiddleware, solvedProblembyUser);
+problemRouter.get("/problemSolvedByUser", UserMiddleware, solvedProblembyUser);
 // Getting all solutions for a problem submitted by User
 problemRouter.get("/solutions/:id", UserMiddleware, submissionbyUser);
+problemRouter.get("/submittedProblem/:id", UserMiddleware, submissionbyUser);
 
 module.exports = problemRouter;

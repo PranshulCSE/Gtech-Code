@@ -27,6 +27,19 @@ const UserSchema = new Schema({
         min: 8,
         max: 80
     },
+    phone: {
+        type: String,
+        trim: true
+    },
+    address: {
+        type: String,
+        trim: true
+    },
+    bio: {
+        type: String,
+        trim: true,
+        maxlength: 280
+    },
     role: {
         type: String,
         enum: ["user", "admin"],

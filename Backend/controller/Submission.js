@@ -103,7 +103,7 @@ const submitCode = async (req, res) => {
             await req.user.save();
         }
         res.status(201).json({
-            accepted,
+            accepted: status === 'accepted',
             totalTestCases: submittedResult.testCasesTotal,
             passedTestCases: testCasesPassed,
             runtime,
@@ -162,27 +162,23 @@ const runCode = async (req, res) => {
         let errorMessage = null;
 
         for (const test of result) {
-            if (test.status_id == 3) {
+            if (test.status.id === 3) {
                 testCasesPassed++;
-                runtime = runtime + parseFloat(test.time)
-                memory = Math.max(memory, test.memory);
+                runtime = runtime + parseFloat(test.time);
+                memory = Math.max(memory, parseFloat(test.memory));
             } else {
-                if (test.status_id == 4) {
-                    status = false
-                    errorMessage = test.stderr
-                }
-                else {
-                    status = false
-                    errorMessage = test.stderr
-                }
+                status = false;
+                errorMessage = test.stderr || test.status.description;
+                break;
             }
         }
 
         res.status(201).json({
             success: status,
-            testCases: testResult,
+            testCases: result,
             runtime,
-            memory
+            memory,
+            error: errorMessage
         });
 
     }

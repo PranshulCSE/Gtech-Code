@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import Editor from '@monaco-editor/react';
 import { useParams } from 'react-router';
-import axiosClient from "../utils/axiosClient"
-import SubmissionHistory from "../components/SubmissionHistory"
+import axiosClient from '../../utils/axiosClient';
+import SubmissionHistory from '../components/SubmissionHistory';
 
 const langMap = {
-        cpp: 'C++',
-        java: 'Java',
-        javascript: 'JavaScript'
+  cpp: 'C++',
+  java: 'Java',
+  javascript: 'JavaScript'
 };
 
 
@@ -22,182 +22,184 @@ const ProblemPage = () => {
   const [activeLeftTab, setActiveLeftTab] = useState('description');
   const [activeRightTab, setActiveRightTab] = useState('code');
   const editorRef = useRef(null);
-  let {problemId}  = useParams();
+  const { problemid } = useParams();
 
   const { handleSubmit } = useForm();
 
 
-//     _id: '507f1f77bcf86cd799439011',
-//     title: 'Two Sum',
-//     description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+  //     _id: '507f1f77bcf86cd799439011',
+  //     title: 'Two Sum',
+  //     description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
 
-// You may assume that each input would have exactly one solution, and you may not use the same element twice.
+  // You may assume that each input would have exactly one solution, and you may not use the same element twice.
 
-// You can return the answer in any order.
+  // You can return the answer in any order.
 
-// Example 1:
-// Input: nums = [2,7,11,15], target = 9
-// Output: [0,1]
-// Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+  // Example 1:
+  // Input: nums = [2,7,11,15], target = 9
+  // Output: [0,1]
+  // Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
 
-// Example 2:
-// Input: nums = [3,2,4], target = 6
-// Output: [1,2]
+  // Example 2:
+  // Input: nums = [3,2,4], target = 6
+  // Output: [1,2]
 
-// Example 3:
-// Input: nums = [3,3], target = 6
-// Output: [0,1]
+  // Example 3:
+  // Input: nums = [3,3], target = 6
+  // Output: [0,1]
 
-// Constraints:
-// - 2 <= nums.length <= 10^4
-// - -10^9 <= nums[i] <= 10^9
-// - -10^9 <= target <= 10^9
-// - Only one valid answer exists.`,
-//     difficulty: 'easy',
-//     tags: 'array',
-//     visibleTestCases: [
-//       {
-//         input: 'nums = [2,7,11,15], target = 9',
-//         output: '[0,1]',
-//         explanation: 'Because nums[0] + nums[1] == 9, we return [0, 1].'
-//       },
-//       {
-//         input: 'nums = [3,2,4], target = 6',
-//         output: '[1,2]',
-//         explanation: 'Because nums[1] + nums[2] == 6, we return [1, 2].'
-//       }
-//     ],
-//     startCode: [
-//       {
-//         language: 'javascript',
-//         initialCode: `/**
-//  * @param {number[]} nums
-//  * @param {number} target
-//  * @return {number[]}
-//  */
-// var twoSum = function(nums, target) {
-    
-// };`
-//       },
-//       {
-//         language: 'java',
-//         initialCode: `class Solution {
-//     public int[] twoSum(int[] nums, int target) {
-        
-//     }
-// }`
-//       },
-//       {
-//         language: 'cpp',
-//         initialCode: `class Solution {
-// public:
-//     vector<int> twoSum(vector<int>& nums, int target) {
-        
-//     }
-// };`
-//       }
-//     ],
-//     editorial: {
-//       content: `## Approach 1: Brute Force
+  // Constraints:
+  // - 2 <= nums.length <= 10^4
+  // - -10^9 <= nums[i] <= 10^9
+  // - -10^9 <= target <= 10^9
+  // - Only one valid answer exists.`,
+  //     difficulty: 'easy',
+  //     tags: 'array',
+  //     visibleTestCases: [
+  //       {
+  //         input: 'nums = [2,7,11,15], target = 9',
+  //         output: '[0,1]',
+  //         explanation: 'Because nums[0] + nums[1] == 9, we return [0, 1].'
+  //       },
+  //       {
+  //         input: 'nums = [3,2,4], target = 6',
+  //         output: '[1,2]',
+  //         explanation: 'Because nums[1] + nums[2] == 6, we return [1, 2].'
+  //       }
+  //     ],
+  //     startCode: [
+  //       {
+  //         language: 'javascript',
+  //         initialCode: `/**
+  //  * @param {number[]} nums
+  //  * @param {number} target
+  //  * @return {number[]}
+  //  */
+  // var twoSum = function(nums, target) {
 
-// The brute force approach is simple. Loop through each element x and find if there is another value that equals to target - x.
+  // };`
+  //       },
+  //       {
+  //         language: 'java',
+  //         initialCode: `class Solution {
+  //     public int[] twoSum(int[] nums, int target) {
 
-// **Algorithm:**
-// 1. For each element in the array
-// 2. Check if target - current element exists in the rest of the array
-// 3. If found, return the indices
+  //     }
+  // }`
+  //       },
+  //       {
+  //         language: 'cpp',
+  //         initialCode: `class Solution {
+  // public:
+  //     vector<int> twoSum(vector<int>& nums, int target) {
 
-// **Complexity Analysis:**
-// - Time complexity: O(n²)
-// - Space complexity: O(1)
+  //     }
+  // };`
+  //       }
+  //     ],
+  //     editorial: {
+  //       content: `## Approach 1: Brute Force
 
-// ## Approach 2: Hash Table
+  // The brute force approach is simple. Loop through each element x and find if there is another value that equals to target - x.
 
-// To improve our runtime complexity, we need a more efficient way to check if the complement exists in the array. If the complement exists, we need to get its index. What is the best way to maintain a mapping of each element in the array to its index? A hash table.
+  // **Algorithm:**
+  // 1. For each element in the array
+  // 2. Check if target - current element exists in the rest of the array
+  // 3. If found, return the indices
 
-// **Algorithm:**
-// 1. Create a hash table to store elements and their indices
-// 2. For each element, calculate complement = target - current element
-// 3. If complement exists in hash table, return indices
-// 4. Otherwise, add current element to hash table
+  // **Complexity Analysis:**
+  // - Time complexity: O(n²)
+  // - Space complexity: O(1)
 
-// **Complexity Analysis:**
-// - Time complexity: O(n)
-// - Space complexity: O(n)`
-//     },
-//     solutions: [
-//       {
-//         language: 'javascript',
-//         title: 'Hash Table Approach',
-//         code: `var twoSum = function(nums, target) {
-//     const map = new Map();
-    
-//     for (let i = 0; i < nums.length; i++) {
-//         const complement = target - nums[i];
-        
-//         if (map.has(complement)) {
-//             return [map.get(complement), i];
-//         }
-        
-//         map.set(nums[i], i);
-//     }
-    
-//     return [];
-// };`
-//       },
-//       {
-//         language: 'java',
-//         title: 'Hash Table Approach',
-//         code: `class Solution {
-//     public int[] twoSum(int[] nums, int target) {
-//         Map<Integer, Integer> map = new HashMap<>();
-        
-//         for (int i = 0; i < nums.length; i++) {
-//             int complement = target - nums[i];
-            
-//             if (map.containsKey(complement)) {
-//                 return new int[] { map.get(complement), i };
-//             }
-            
-//             map.put(nums[i], i);
-//         }
-        
-//         return new int[0];
-//     }
-// }`
-//       }
-//     ]
-//   };
+  // ## Approach 2: Hash Table
+
+  // To improve our runtime complexity, we need a more efficient way to check if the complement exists in the array. If the complement exists, we need to get its index. What is the best way to maintain a mapping of each element in the array to its index? A hash table.
+
+  // **Algorithm:**
+  // 1. Create a hash table to store elements and their indices
+  // 2. For each element, calculate complement = target - current element
+  // 3. If complement exists in hash table, return indices
+  // 4. Otherwise, add current element to hash table
+
+  // **Complexity Analysis:**
+  // - Time complexity: O(n)
+  // - Space complexity: O(n)`
+  //     },
+  //     solutions: [
+  //       {
+  //         language: 'javascript',
+  //         title: 'Hash Table Approach',
+  //         code: `var twoSum = function(nums, target) {
+  //     const map = new Map();
+
+  //     for (let i = 0; i < nums.length; i++) {
+  //         const complement = target - nums[i];
+
+  //         if (map.has(complement)) {
+  //             return [map.get(complement), i];
+  //         }
+
+  //         map.set(nums[i], i);
+  //     }
+
+  //     return [];
+  // };`
+  //       },
+  //       {
+  //         language: 'java',
+  //         title: 'Hash Table Approach',
+  //         code: `class Solution {
+  //     public int[] twoSum(int[] nums, int target) {
+  //         Map<Integer, Integer> map = new HashMap<>();
+
+  //         for (int i = 0; i < nums.length; i++) {
+  //             int complement = target - nums[i];
+
+  //             if (map.containsKey(complement)) {
+  //                 return new int[] { map.get(complement), i };
+  //             }
+
+  //             map.put(nums[i], i);
+  //         }
+
+  //         return new int[0];
+  //     }
+  // }`
+  //       }
+  //     ]
+  //   };
 
   // Fetch problem data
   useEffect(() => {
     const fetchProblem = async () => {
       setLoading(true);
       try {
-        
-        const response = await axiosClient.get(`/problem/problemById/${problemId}`);
-       
-        
-        const initialCode = response.data.startCode.find(sc => sc.language === langMap[selectedLanguage]).initialCode;
+        const response = await axiosClient.get(`/problem/problemById/${problemid}`);
+        const problemData = response.data;
+        const starterLanguage = langMap[selectedLanguage];
+        const initialCode = problemData.BoilerplateCode?.find(
+          (sc) => sc.language?.toLowerCase() === starterLanguage?.toLowerCase()
+        )?.startingCode || '';
 
-        setProblem(response.data);
-        
+        setProblem(problemData);
         setCode(initialCode);
-        setLoading(false);
-        
       } catch (error) {
         console.error('Error fetching problem:', error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchProblem();
-  }, [problemId]);
+  }, [problemid, selectedLanguage]);
 
   // Update code when language changes
   useEffect(() => {
     if (problem) {
-      const initialCode = problem.startCode.find(sc => sc.language === langMap[selectedLanguage]).initialCode;
+      const starterLanguage = langMap[selectedLanguage];
+      const initialCode = problem.BoilerplateCode?.find(
+        (sc) => sc.language?.toLowerCase() === starterLanguage?.toLowerCase()
+      )?.startingCode || '';
       setCode(initialCode);
     }
   }, [selectedLanguage, problem]);
@@ -217,9 +219,9 @@ const ProblemPage = () => {
   const handleRun = async () => {
     setLoading(true);
     setRunResult(null);
-    
+
     try {
-      const response = await axiosClient.post(`/submission/run/${problemId}`, {
+      const response = await axiosClient.post(`/submission/run/${problemid}`, {
         code,
         language: selectedLanguage
       });
@@ -227,7 +229,7 @@ const ProblemPage = () => {
       setRunResult(response.data);
       setLoading(false);
       setActiveRightTab('testcase');
-      
+
     } catch (error) {
       console.error('Error running code:', error);
       setRunResult({
@@ -242,17 +244,17 @@ const ProblemPage = () => {
   const handleSubmitCode = async () => {
     setLoading(true);
     setSubmitResult(null);
-    
+
     try {
-        const response = await axiosClient.post(`/submission/submit/${problemId}`, {
-        code:code,
+      const response = await axiosClient.post(`/submission/submit/${problemid}`, {
+        code: code,
         language: selectedLanguage
       });
 
-       setSubmitResult(response.data);
-       setLoading(false);
-       setActiveRightTab('result');
-      
+      setSubmitResult(response.data);
+      setLoading(false);
+      setActiveRightTab('result');
+
     } catch (error) {
       console.error('Error submitting code:', error);
       setSubmitResult(null);
@@ -293,25 +295,25 @@ const ProblemPage = () => {
       <div className="w-1/2 flex flex-col border-r border-base-300">
         {/* Left Tabs */}
         <div className="tabs tabs-bordered bg-base-200 px-4">
-          <button 
+          <button
             className={`tab ${activeLeftTab === 'description' ? 'tab-active' : ''}`}
             onClick={() => setActiveLeftTab('description')}
           >
             Description
           </button>
-          <button 
+          <button
             className={`tab ${activeLeftTab === 'editorial' ? 'tab-active' : ''}`}
             onClick={() => setActiveLeftTab('editorial')}
           >
             Editorial
           </button>
-          <button 
+          <button
             className={`tab ${activeLeftTab === 'solutions' ? 'tab-active' : ''}`}
             onClick={() => setActiveLeftTab('solutions')}
           >
             Solutions
           </button>
-          <button 
+          <button
             className={`tab ${activeLeftTab === 'submissions' ? 'tab-active' : ''}`}
             onClick={() => setActiveLeftTab('submissions')}
           >
@@ -342,7 +344,7 @@ const ProblemPage = () => {
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold mb-4">Examples:</h3>
                     <div className="space-y-4">
-                      {problem.visibleTestCases.map((example, index) => (
+                      {problem.VisibleTestCases?.map((example, index) => (
                         <div key={index} className="bg-base-200 p-4 rounded-lg">
                           <h4 className="font-semibold mb-2">Example {index + 1}:</h4>
                           <div className="space-y-2 text-sm font-mono">
@@ -370,14 +372,14 @@ const ProblemPage = () => {
                 <div>
                   <h2 className="text-xl font-bold mb-4">Solutions</h2>
                   <div className="space-y-6">
-                    {problem.referenceSolution?.map((solution, index) => (
+                    {problem.ReferenceSolution?.map((solution, index) => (
                       <div key={index} className="border border-base-300 rounded-lg">
                         <div className="bg-base-200 px-4 py-2 rounded-t-lg">
                           <h3 className="font-semibold">{problem?.title} - {solution?.language}</h3>
                         </div>
                         <div className="p-4">
                           <pre className="bg-base-300 p-4 rounded text-sm overflow-x-auto">
-                            <code>{solution?.completeCode}</code>
+                            <code>{solution?.code}</code>
                           </pre>
                         </div>
                       </div>
@@ -390,7 +392,7 @@ const ProblemPage = () => {
                 <div>
                   <h2 className="text-xl font-bold mb-4">My Submissions</h2>
                   <div className="text-gray-500">
-                    <SubmissionHistory problemId={problemId} />
+                    <SubmissionHistory problemId={problemid} />
                   </div>
                 </div>
               )}
@@ -403,19 +405,19 @@ const ProblemPage = () => {
       <div className="w-1/2 flex flex-col">
         {/* Right Tabs */}
         <div className="tabs tabs-bordered bg-base-200 px-4">
-          <button 
+          <button
             className={`tab ${activeRightTab === 'code' ? 'tab-active' : ''}`}
             onClick={() => setActiveRightTab('code')}
           >
             Code
           </button>
-          <button 
+          <button
             className={`tab ${activeRightTab === 'testcase' ? 'tab-active' : ''}`}
             onClick={() => setActiveRightTab('testcase')}
           >
             Testcase
           </button>
-          <button 
+          <button
             className={`tab ${activeRightTab === 'result' ? 'tab-active' : ''}`}
             onClick={() => setActiveRightTab('result')}
           >
@@ -477,7 +479,7 @@ const ProblemPage = () => {
               {/* Action Buttons */}
               <div className="p-4 border-t border-base-300 flex justify-between">
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     className="btn btn-ghost btn-sm"
                     onClick={() => setActiveRightTab('testcase')}
                   >
@@ -513,9 +515,9 @@ const ProblemPage = () => {
                     {runResult.success ? (
                       <div>
                         <h4 className="font-bold">✅ All test cases passed!</h4>
-                        <p className="text-sm mt-2">Runtime: {runResult.runtime+" sec"}</p>
-                        <p className="text-sm">Memory: {runResult.memory+" KB"}</p>
-                        
+                        <p className="text-sm mt-2">Runtime: {runResult.runtime + " sec"}</p>
+                        <p className="text-sm">Memory: {runResult.memory + " KB"}</p>
+
                         <div className="mt-4 space-y-2">
                           {runResult.testCases.map((tc, i) => (
                             <div key={i} className="bg-base-100 p-3 rounded text-xs">
@@ -541,8 +543,8 @@ const ProblemPage = () => {
                                 <div><strong>Input:</strong> {tc.stdin}</div>
                                 <div><strong>Expected:</strong> {tc.expected_output}</div>
                                 <div><strong>Output:</strong> {tc.stdout}</div>
-                                <div className={tc.status_id==3 ? 'text-green-600' : 'text-red-600'}>
-                                  {tc.status_id==3 ? '✓ Passed' : '✗ Failed'}
+                                <div className={tc.status_id == 3 ? 'text-green-600' : 'text-red-600'}>
+                                  {tc.status_id == 3 ? '✓ Passed' : '✗ Failed'}
                                 </div>
                               </div>
                             </div>

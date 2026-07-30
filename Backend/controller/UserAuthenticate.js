@@ -160,6 +160,60 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const calculateStreak = (acceptedSubmissions) => {
+    const solvedDays = new Set(
+        acceptedSubmissions.map((submissionItem) => new Date(submissionItem.createdAt).toISOString().slice(0, 10))
+    );
+
+    let streak = 0;
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+
+    while (solvedDays.has(cursor.toISOString().slice(0, 10))) {
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+    }
+
+    return streak;
+}
+
+const getUserStats = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const [submissions, acceptedSubmissions] = await Promise.all([
+            submission.find({ userId }).sort({ createdAt: -1 }).populate('problemId', 'title difficulty tags'),
+            submission.find({ userId, status: 'accepted' }).sort({ createdAt: -1 })
+        ]);
+
+        const solvedCount = req.user.problemsolved?.length || 0;
+        const totalAttempts = submissions.length;
+        const acceptanceRate = totalAttempts === 0 ? 0 : Math.round((acceptedSubmissions.length / totalAttempts) * 100);
+        const streak = calculateStreak(acceptedSubmissions);
+
+        const recentActivity = submissions.slice(0, 5).map((item) => ({
+            _id: item._id,
+            problemId: item.problemId?._id || item.problemId,
+            title: item.problemId?.title || 'Problem',
+            difficulty: item.problemId?.difficulty || 'unknown',
+            status: item.status,
+            language: item.language,
+            createdAt: item.createdAt
+        }));
+
+        res.status(200).json({
+            solvedCount,
+            totalAttempts,
+            acceptanceRate,
+            streak,
+            recentActivity,
+            recentSubmissions: recentActivity
+        });
+    } catch (err) {
+        res.status(400).json({ message: 'Error fetching stats: ' + err.message });
+    }
+}
+
 // Reset Password
 // NEW: Implemented full flow in a single controller (two modes based on req.body):
 //   1) { email }              -> generates a reset token, saves its hash + expiry on the user, emails the raw token/link
@@ -233,7 +287,7 @@ const updateUserProfile = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const allowedUpdates = ['firstname', 'lastname', 'phone', 'address'];
+        const allowedUpdates = ['firstname', 'lastname', 'age', 'phone', 'address', 'bio'];
         const updates = {};
 
         allowedUpdates.forEach(field => {
@@ -256,6 +310,35 @@ const updateUserProfile = async (req, res) => {
     }
     catch (err) {
         res.status(400).send('Error updating profile: ' + err.message);
+    }
+}
+
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).send('Current password and new password are required');
+        }
+
+        const existingUser = await user.findById(req.user._id);
+
+        if (!existingUser) {
+            return res.status(404).send('User not found');
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, existingUser.password);
+
+        if (!isMatch) {
+            return res.status(400).send('Current password is incorrect');
+        }
+
+        existingUser.password = await bcrypt.hash(newPassword, 10);
+        await existingUser.save();
+
+        res.status(200).send('Password changed successfully');
+    } catch (err) {
+        res.status(400).send('Error changing password: ' + err.message);
     }
 }
 
@@ -318,4 +401,4 @@ const deleteUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, getUserProfile, resetPassword, updateUserProfile, verifyUserEmail, deleteUserProfile };
+module.exports = { registerUser, loginUser, logoutUser, getUserProfile, getUserStats, resetPassword, updateUserProfile, changePassword, verifyUserEmail, deleteUserProfile };

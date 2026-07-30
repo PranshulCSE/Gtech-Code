@@ -82,7 +82,29 @@ function AdminPanel() {
 
     const onSubmit = async (data) => {
         try {
-            await axiosClient.post('/problem/create', data);
+            const normalizedData = {
+                ...data,
+                tags: data.tags ? [data.tags] : [],
+                VisibleTestCases: (data.visibleTestCases || []).map((testCase) => ({
+                    input: testCase.input,
+                    output: testCase.output,
+                    explanation: testCase.explanation
+                })),
+                InvisibleTestCases: (data.hiddenTestCases || []).map((testCase) => ({
+                    input: testCase.input,
+                    output: testCase.output
+                })),
+                BoilerplateCode: (data.BoilerplateCode || []).map((item) => ({
+                    language: item.language === 'JavaScript' ? 'javascript' : item.language === 'Java' ? 'java' : item.language === 'C++' ? 'cpp' : item.language,
+                    startingCode: item.initialCode || ''
+                })),
+                ReferenceSolution: (data.referenceSolution || []).map((item) => ({
+                    language: item.language === 'JavaScript' ? 'javascript' : item.language === 'Java' ? 'java' : item.language === 'C++' ? 'cpp' : item.language,
+                    code: item.completeCode || ''
+                }))
+            };
+
+            await axiosClient.post('/problem/create', normalizedData);
             alert('Problem created successfully!');
             navigate('/');
         } catch (error) {
@@ -148,7 +170,7 @@ function AdminPanel() {
                                     {...register('tags')}
                                     className={`select select-bordered ${errors.tags && 'select-error'}`}
                                 >
-                                   <option value="array">Array</option>
+                                    <option value="array">Array</option>
                                     <option value="strings">String</option>
                                     <option value="maths">Maths</option>
                                     <option value="dynamic programming">DP</option>
@@ -266,10 +288,10 @@ function AdminPanel() {
                     <h2 className="text-xl font-semibold mb-4">Code Templates</h2>
 
                     <div className="space-y-6">
-                        {[0, 1, 2 , 3].map((index) => (
+                        {[0, 1, 2, 3].map((index) => (
                             <div key={index} className="space-y-2">
                                 <h3 className="font-medium">
-                                    {index === 0 ? 'C++' : index === 1 ? 'Java' : index === 2 ? 'Python ': 'JavaScript'}
+                                    {index === 0 ? 'C++' : index === 1 ? 'Java' : index === 2 ? 'Python ' : 'JavaScript'}
                                 </h3>
 
                                 <div className="form-control">
