@@ -38,12 +38,21 @@ const registerUser = async (req, res) => {
 
         const verificationUrl = `${clientUrl}/verify-email/${rawVerificationToken}`;
 
-        await sendEmail({
-            to: newUser.email,
-            subject: 'Verify Your Email',
-            text: `Please verify your email within 24 hours: ${verificationUrl}`,
-            html: verificationEmailTemplate(verificationUrl, newUser.firstname)
-        });
+        // FIX: sendEmail was awaited unguarded -> if email credentials/service failed,
+        // the whole request threw even though the user was already created in the DB,
+        // leaving an orphaned account and a misleading "registration failed" response.
+        let emailSent = true;
+        try {
+            await sendEmail({
+                to: newUser.email,
+                subject: 'Verify Your Email',
+                text: `Please verify your email within 24 hours: ${verificationUrl}`,
+                html: verificationEmailTemplate(verificationUrl, newUser.firstname)
+            });
+        } catch (emailErr) {
+            emailSent = false;
+            console.log('Verification email failed to send: ', emailErr.message);
+        }
 
         // Extracting Password
         const UserWithoutPassword = newUser.toObject();
@@ -51,7 +60,9 @@ const registerUser = async (req, res) => {
         delete UserWithoutPassword.verificationToken;
         res.status(201).send({
             user: UserWithoutPassword,
-            message: 'User Registered Successfully. Please verify your email.'
+            message: emailSent
+                ? 'User Registered Successfully. Please verify your email.'
+                : 'User Registered Successfully, but the verification email could not be sent. Please try resending it later.'
         })
     }
     catch (err) {

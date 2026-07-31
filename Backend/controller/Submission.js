@@ -15,23 +15,24 @@ const submitCode = async (req, res) => {
             return res.status(400).send("Missing required fields");
         }
 
-        if (language === 'cpp')
-            language = 'c++'
-
+        // NOTE: 'language' is kept as-is ('cpp', not 'c++') because both the Judge0
+        // language map (LanguageUtils.js) and the Mongoose schema enum (model/submission.js)
+        // expect 'cpp'. Reassigning it to 'c++' here used to crash (const reassignment)
+        // and would have failed schema validation anyway.
 
         const Problem = await ProblemStatement.findById(problemId);
         if (!Problem) {
             return res.status(404).send("Problem Statement not found");
         }
 
-        // FIX: testCasesTotal ko InvisibletestCases se le rahe hain kyunki submission invisible cases pe hi judge hota hai
+        // FIX: testCasesTotal ko InvisibleTestCases se le rahe hain kyunki submission invisible cases pe hi judge hota hai
         const submittedResult = await Submission.create({
             userId,
             problemId,
             code,
             language,
             status: 'pending',
-            testCasesTotal: Problem.InvisibletestCases.length
+            testCasesTotal: Problem.InvisibleTestCases.length
         })
 
         // Submitting Code to Judge0
@@ -39,8 +40,8 @@ const submitCode = async (req, res) => {
         const languageId = getLanguageById(language);
 
         // Creating Submission Array for Batch Submission for Judge Zero
-        // FIX: "Problem.InvisibletestCases" use kiya, "ProblemStatement.InvisibletestCases" galat tha (model pe field nahi hota)
-        const submissions = Problem.InvisibletestCases.map((testcases) => ({
+        // FIX: field name matches the schema exactly -> "InvisibleTestCases" (capital T), not "InvisibletestCases"
+        const submissions = Problem.InvisibleTestCases.map((testcases) => ({
             source_code: code,
             language_id: languageId,
             stdin: testcases.input,
@@ -112,7 +113,7 @@ const submitCode = async (req, res) => {
 
     }
     catch (err) {
-        res.status(500).send("Error in submitting code" + err.message);
+        res.status(500).send("Error in submitting code: " + err.message);
     }
 }
 
@@ -131,16 +132,13 @@ const runCode = async (req, res) => {
             return res.status(404).send("Problem Statement not found");
         }
 
-        if (language === 'cpp')
-            language = 'c++'
-
         // Submitting Code to Judge0
 
         const languageId = getLanguageById(language);
 
         // Creating Submission Array for Batch Submission for Judge Zero
-        // FIX: "Problem.InvisibletestCases" use kiya, "ProblemStatement.InvisibletestCases" galat tha (model pe field nahi hota)
-        const submissions = Problem.VisibletestCases.map((testcases) => ({
+        // FIX: field name matches the schema exactly -> "VisibleTestCases" (capital T), not "VisibletestCases"
+        const submissions = Problem.VisibleTestCases.map((testcases) => ({
             source_code: code,
             language_id: languageId,
             stdin: testcases.input,
@@ -183,7 +181,7 @@ const runCode = async (req, res) => {
 
     }
     catch (err) {
-        res.status(500).send("Error in submitting code" + err.message);
+        res.status(500).send("Error in submitting code: " + err.message);
     }
 }
 

@@ -6,6 +6,7 @@ import { NavLink, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../authSlice';
 import { useToast } from '../components/ToastSystem.jsx';
+import Logo from '../components/Logo.jsx';
 
 const signUpSchema = z.object({
     firstname: z.string().min(3, 'Name should contain at least 3 characters').max(30, 'Name is too long'),
@@ -56,6 +57,7 @@ function Signup() {
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(255,192,125,0.18),transparent_25%),linear-gradient(180deg,#f7f9fd_0%,#eef3fa_100%)] px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
                 <div className="portal-card hidden overflow-hidden rounded-[2.25rem] bg-[linear-gradient(145deg,#10224a_0%,#173d86_55%,#2f5ec3_100%)] p-10 text-white shadow-[0_30px_90px_rgba(15,23,42,0.24)] lg:block">
+                    <Logo size={48} showWordmark className="mb-6" />
                     <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/75">Join the portal</p>
                     <h1 className="mt-5 text-5xl font-black leading-tight">Create your academic workspace in minutes.</h1>
                     <p className="mt-4 text-base leading-7 text-white/80">Get access to coding problems, progress analytics, bookmarks, and a dashboard that stays responsive on every screen.</p>
@@ -70,6 +72,7 @@ function Signup() {
 
                 <div className="portal-card rounded-[2.25rem] p-6 sm:p-8">
                     <div className="mb-6 text-center">
+                        <Logo size={40} showWordmark={false} className="mb-4 justify-center lg:hidden" />
                         <p className="text-sm font-bold uppercase tracking-[0.28em] text-slate-500">Get started</p>
                         <h2 className="mt-2 text-3xl font-black text-slate-900">Create your account</h2>
                         <p className="mt-2 text-sm text-slate-500">Start with your student details and a strong password.</p>

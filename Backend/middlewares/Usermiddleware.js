@@ -28,14 +28,27 @@ const userMiddleware = async (req, res, next) => {
             throw new Error('User not found');
         }
 
-        // Checking if the user is in Reddis Blocklist
-        const IsBlocked = await redisClient.exists(`token:${token}`);
-
-        if (IsBlocked) {
-            throw new Error('Invalid Token');
+        // Checking if the user is in Redis Blocklist
+        // FIX: this used to be inside the same try/catch as the auth logic above, so
+        // ANY Redis problem (wrong/missing REDIS_HOST/REDIS_PORT in .env, Redis Cloud
+        // being briefly unreachable, etc.) was caught by the outer catch and turned into
+        // a blanket 401 "Unauthorized" for every single logged-in user on every request -
+        // even though their login/JWT was perfectly valid. A logout-blocklist check
+        // failing should never be able to lock out the whole app like that.
+        try {
+            const IsBlocked = await redisClient.exists(`token:${token}`);
+            if (IsBlocked) {
+                throw new Error('Invalid Token');
+            }
+        } catch (redisErr) {
+            if (redisErr.message === 'Invalid Token') {
+                throw redisErr; // genuinely blocklisted -> still reject
+            }
+            // Redis itself is unreachable/misconfigured -> log it, but don't take down auth.
+            console.warn('Redis blocklist check failed (allowing request through):', redisErr.message);
         }
 
-        req.user = existingUser; // FIXED: was `req.result` -> authController.js (getUserProfile, updateUserProfile) reads `req.user._id`, so it never matched and both routes would crash with "Cannot read properties of undefined". Renamed to req.user to match the rest of the codebase.
+        req.user = existingUser;
         next();
     }
     catch (err) {

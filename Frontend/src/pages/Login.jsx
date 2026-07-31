@@ -6,6 +6,7 @@ import { Link, NavLink, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../authSlice';
 import { useToast } from '../components/ToastSystem.jsx';
+import Logo from '../components/Logo.jsx';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -51,6 +52,7 @@ function Login() {
             <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
                 <div className="portal-hero hidden overflow-hidden rounded-[2.25rem] bg-[linear-gradient(145deg,#10224a_0%,#173d86_48%,#2f5ec3_100%)] p-10 text-white shadow-[0_30px_90px_rgba(15,23,42,0.24)] lg:block">
                     <div className="max-w-lg">
+                        <Logo size={48} showWordmark className="mb-6" />
                         <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/75">Student portal</p>
                         <h1 className="mt-5 text-5xl font-black leading-tight">Access your dashboard, problems, and progress in one place.</h1>
                         <p className="mt-4 text-base leading-7 text-white/80">Track solved counts, recent submissions, and campus-style updates through a fast, responsive interface.</p>
@@ -66,6 +68,7 @@ function Login() {
 
                 <div className="portal-card rounded-[2.25rem] p-6 sm:p-8">
                     <div className="mb-6 text-center">
+                        <Logo size={40} showWordmark={false} className="mb-4 justify-center lg:hidden" />
                         <p className="text-sm font-bold uppercase tracking-[0.28em] text-slate-500">Welcome back</p>
                         <h2 className="mt-2 text-3xl font-black text-slate-900">Login to GTech-Code</h2>
                         <p className="mt-2 text-sm text-slate-500">Use your student account to continue coding.</p>

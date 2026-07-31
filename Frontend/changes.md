@@ -1,23 +1,48 @@
-error display on login or signup page 
-Role-based admin protection
+Pagination for the Problems
+Submission history show nhi ho rhi hai
+Admin panel pr click krne pr seedhe problem create page pr direct kr rha hai 
+Your essentials m se koi bhi button kaam nhi kr rha hai
 
-The admin page should be protected by user role, not just by URL access.
-User profile page
+Quick access
+Jump straight into the tools you use most.
 
-Add profile view/edit, password change, and account settings.
-Better problem browsing
+✓
+Solved Problems
+Review the problems you have already completed.
 
-Add search, sorting, pagination, and favorites/bookmarks.
-Better feedback for users
+★
+Bookmarks
+Open the problems you saved for later.
 
-Replace alert() with toast/snackbar notifications for login, signup, admin actions, and submissions.
-Dashboard/statistics
+↻
+Recent Activity
+Check your latest submissions and attempts.
+Ye charo bnd hai 
 
-Show solved count, streaks, recent activity, and progress analytics.
-Improved problem experience
+Admin k pss power hoye ki vo new admin create kr ske or unhe delete update kr ske but y sirf single superadmin kr ske 
+
+Or ye sare errors theek kro
+Failed to load resource: the server responded with a status of 404 (Not Found)
+SubmissionHistory.jsx:19 AxiosError: Request failed with status code 404
+(anonymous)	@	SubmissionHistory.jsx:19
+:3000/problem/submit…a1a6bcbd816ea790a:1 
+ Failed to load resource: the server responded with a status of 404 (Not Found)
+SubmissionHistory.jsx:19 AxiosError: Request failed with status code 404
+(anonymous)	@	SubmissionHistory.jsx:19
+:3000/problem/getAllProblem:1 
+ Failed to load resource: the server responded with a status of 401 (Unauthorized)
+:3000/user/stats:1 
+ Failed to load resource: the server responded with a status of 401 (Unauthorized)
+:3000/problem/problemSolvedByUser:1 
+ Failed to load resource: the server responded with a status of 401 (Unauthorized)
+:3000/problem/submit…a1a6bcbd816ea790a:1 
+ Failed to load resource: the server responded with a status of 404 (Not Found)
+SubmissionHistory.jsx:19 AxiosError: Request failed with status code 404
+(anonymous)	@	SubmissionHistory.jsx:19
+:3000/problem/submit…a1a6bcbd816ea790a:1 
+ Failed to load resource: the server responded with a status of 404 (Not Found)
+SubmissionHistory.jsx:19 AxiosError: Request failed with status code 404
+(anonymous)	@	SubmissionHistory.jsx:19
 
 
-Some more functionalities like how to create other admins, how to delete them from admin panel 
-
-Whole UI Updation.
-
+Jha pr side navbar m side m 3 options hai dashboard , profile , admin panel h vha pr ek browse problems krke tab banao sari problems vha pr show hoye

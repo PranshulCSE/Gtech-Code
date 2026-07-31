@@ -8,7 +8,8 @@ import SubmissionHistory from '../components/SubmissionHistory';
 const langMap = {
   cpp: 'C++',
   java: 'Java',
-  javascript: 'JavaScript'
+  javascript: 'JavaScript',
+  python: 'Python' // FIX: Python is fully supported by the backend/Judge0 but was missing here
 };
 
 
@@ -268,6 +269,7 @@ const ProblemPage = () => {
       case 'javascript': return 'javascript';
       case 'java': return 'java';
       case 'cpp': return 'cpp';
+      case 'python': return 'python';
       default: return 'javascript';
     }
   };
@@ -432,13 +434,13 @@ const ProblemPage = () => {
               {/* Language Selector */}
               <div className="flex justify-between items-center p-4 border-b border-base-300">
                 <div className="flex gap-2">
-                  {['javascript', 'java', 'cpp'].map((lang) => (
+                  {['javascript', 'java', 'cpp', 'python'].map((lang) => (
                     <button
                       key={lang}
                       className={`btn btn-sm ${selectedLanguage === lang ? 'btn-primary' : 'btn-ghost'}`}
                       onClick={() => handleLanguageChange(lang)}
                     >
-                      {lang === 'cpp' ? 'C++' : lang === 'javascript' ? 'JavaScript' : 'Java'}
+                      {langMap[lang]}
                     </button>
                   ))}
                 </div>
@@ -543,8 +545,8 @@ const ProblemPage = () => {
                                 <div><strong>Input:</strong> {tc.stdin}</div>
                                 <div><strong>Expected:</strong> {tc.expected_output}</div>
                                 <div><strong>Output:</strong> {tc.stdout}</div>
-                                <div className={tc.status_id == 3 ? 'text-green-600' : 'text-red-600'}>
-                                  {tc.status_id == 3 ? '✓ Passed' : '✗ Failed'}
+                                <div className={tc.status?.id === 3 ? 'text-green-600' : 'text-red-600'}>
+                                  {tc.status?.id === 3 ? '✓ Passed' : '✗ Failed'}
                                 </div>
                               </div>
                             </div>

@@ -5,8 +5,8 @@ const redisClient = createClient({
     username: 'default',
     password: process.env.REDIS_PASSWORD,
     socket: {
-        host: 'retrofine-limeish-rainstorm-85956.db.redis.io',
-        port: 17419
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT)
     }
 });
 

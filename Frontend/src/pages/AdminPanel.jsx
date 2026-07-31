@@ -1,333 +1,58 @@
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import axiosClient from '../../utils/axiosClient';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import ProblemForm from '../components/ProblemForm';
+import ManageProblems from '../components/ManageProblems';
+import ManageAdmins from '../components/ManageAdmins';
+import Logo from '../components/Logo.jsx';
 
-// Zod schema matching the problem schema
-const problemSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    description: z.string().min(1, 'Description is required'),
-    difficulty: z.enum(['easy', 'medium', 'hard']),
-    tags: z.enum(["arrays", "strings", "maths", "dynamic programming", "greedy", "graphs", "trees", "hashing", "recursion", "backtracking", "sorting", "searching", "bit manipulation", "linked list", "stack", "queue", "heap", "trie", "dp on trees", "dp on graphs"]),
-    VisibleTestCases: z.array(
-        z.object({
-            input: z.string().min(1, 'Input is required'),
-            output: z.string().min(1, 'Output is required'),
-            explanation: z.string().min(1, 'Explanation is required')
-        })
-    ).min(1, 'At least one visible test case required'),
-    hiddenTestCases: z.array(
-        z.object({
-            input: z.string().min(1, 'Input is required'),
-            output: z.string().min(1, 'Output is required')
-        })
-    ).min(1, 'At least one hidden test case required'),
-    BoilerplateCode: z.array(
-        z.object({
-            language: z.enum(['C++', 'Java', 'JavaScript']),
-            initialCode: z.string().min(1, 'Initial code is required')
-        })
-    ).length(3, 'All three languages required'),
-    referenceSolution: z.array(
-        z.object({
-            language: z.enum(['C++', 'Java', 'JavaScript']),
-            completeCode: z.string().min(1, 'Complete code is required')
-        })
-    ).length(3, 'All three languages required')
-});
+const TABS = [
+    { key: 'create', label: 'Create Problem', icon: '➕' },
+    { key: 'manage', label: 'Manage Problems', icon: '📚' },
+    { key: 'admins', label: 'Manage Admins', icon: '🛡️' }
+];
 
 function AdminPanel() {
+    const [activeTab, setActiveTab] = useState('manage');
     const navigate = useNavigate();
-    const {
-        register,
-        control,
-        handleSubmit,
-        formState: { errors }
-    } = useForm({
-        resolver: zodResolver(problemSchema),
-        defaultValues: {
-            startCode: [
-                { language: 'C++', initialCode: '' },
-                { language: 'Java', initialCode: '' },
-                { language: 'Python', initialCode: '' },
-                { language: 'JavaScript', initialCode: '' }
-            ],
-            referenceSolution: [
-                { language: 'C++', completeCode: '' },
-                { language: 'Java', completeCode: '' },
-                { language: 'Python', initialCode: '' },
-                { language: 'JavaScript', completeCode: '' }
-            ]
-        }
-    });
-
-    const {
-        fields: visibleFields,
-        append: appendVisible,
-        remove: removeVisible
-    } = useFieldArray({
-        control,
-        name: 'visibleTestCases'
-    });
-
-    const {
-        fields: hiddenFields,
-        append: appendHidden,
-        remove: removeHidden
-    } = useFieldArray({
-        control,
-        name: 'hiddenTestCases'
-    });
-
-    const onSubmit = async (data) => {
-        try {
-            const normalizedData = {
-                ...data,
-                tags: data.tags ? [data.tags] : [],
-                VisibleTestCases: (data.visibleTestCases || []).map((testCase) => ({
-                    input: testCase.input,
-                    output: testCase.output,
-                    explanation: testCase.explanation
-                })),
-                InvisibleTestCases: (data.hiddenTestCases || []).map((testCase) => ({
-                    input: testCase.input,
-                    output: testCase.output
-                })),
-                BoilerplateCode: (data.BoilerplateCode || []).map((item) => ({
-                    language: item.language === 'JavaScript' ? 'javascript' : item.language === 'Java' ? 'java' : item.language === 'C++' ? 'cpp' : item.language,
-                    startingCode: item.initialCode || ''
-                })),
-                ReferenceSolution: (data.referenceSolution || []).map((item) => ({
-                    language: item.language === 'JavaScript' ? 'javascript' : item.language === 'Java' ? 'java' : item.language === 'C++' ? 'cpp' : item.language,
-                    code: item.completeCode || ''
-                }))
-            };
-
-            await axiosClient.post('/problem/create', normalizedData);
-            alert('Problem created successfully!');
-            navigate('/');
-        } catch (error) {
-            alert(`Error: ${error.response?.data?.message || error.message}`);
-        }
-    };
 
     return (
-        <div className="container mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Create New Problem</h1>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* Basic Information */}
-                <div className="card bg-base-100 shadow-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-                    <div className="space-y-4">
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Title</span>
-                            </label>
-                            <input
-                                {...register('title')}
-                                className={`input input-bordered ${errors.title && 'input-error'}`}
-                            />
-                            {errors.title && (
-                                <span className="text-error">{errors.title.message}</span>
-                            )}
-                        </div>
-
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Description</span>
-                            </label>
-                            <textarea
-                                {...register('description')}
-                                className={`textarea textarea-bordered h-32 ${errors.description && 'textarea-error'}`}
-                            />
-                            {errors.description && (
-                                <span className="text-error">{errors.description.message}</span>
-                            )}
-                        </div>
-
-                        <div className="flex gap-4">
-                            <div className="form-control w-1/2">
-                                <label className="label">
-                                    <span className="label-text">Difficulty</span>
-                                </label>
-                                <select
-                                    {...register('difficulty')}
-                                    className={`select select-bordered ${errors.difficulty && 'select-error'}`}
-                                >
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
-                                </select>
-                            </div>
-
-                            <div className="form-control w-1/2">
-                                <label className="label">
-                                    <span className="label-text">Tag</span>
-                                </label>
-                                <select
-                                    {...register('tags')}
-                                    className={`select select-bordered ${errors.tags && 'select-error'}`}
-                                >
-                                    <option value="array">Array</option>
-                                    <option value="strings">String</option>
-                                    <option value="maths">Maths</option>
-                                    <option value="dynamic programming">DP</option>
-                                    <option value="greedy">Greedy</option>
-                                    <option value="trees">Trees</option>
-                                    <option value="graphs">Graphs</option>
-                                    <option value="hashing">Hashing</option>
-                                    <option value="recursion">Recursion</option>
-                                    <option value="stack">Stack</option>
-                                    <option value="queue">Queue</option>
-                                    <option value="linked ist">Linked List</option>
-                                    <option value="sorting">Sorting</option>
-                                    <option value="heap">Heap</option>
-                                    <option value="bit manipulation">Bit Manipulation</option>
-                                    <option value="searching">Searching</option>
-                                </select>
-                            </div>
-                        </div>
+        <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(255,192,125,0.16),transparent_25%),linear-gradient(180deg,#f7f9fd_0%,#eef3fa_100%)] px-4 py-6 sm:px-6 lg:px-10">
+            <div className="mx-auto max-w-5xl">
+                {/* Header */}
+                <div className="mb-6 flex flex-col gap-4 rounded-3xl bg-slate-950 px-5 py-4 text-white shadow-lg shadow-slate-950/15 sm:flex-row sm:items-center sm:justify-between">
+                    <Logo size={40} showWordmark />
+                    <div className="flex items-center gap-3">
+                        <span className="rounded-full border border-white/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white/70">Admin</span>
+                        <button
+                            onClick={() => navigate('/')}
+                            className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/20"
+                        >
+                            ← Back to Dashboard
+                        </button>
                     </div>
                 </div>
 
-                {/* Test Cases */}
-                <div className="card bg-base-100 shadow-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Test Cases</h2>
-
-                    {/* Visible Test Cases */}
-                    <div className="space-y-4 mb-6">
-                        <div className="flex justify-between items-center">
-                            <h3 className="font-medium">Visible Test Cases</h3>
-                            <button
-                                type="button"
-                                onClick={() => appendVisible({ input: '', output: '', explanation: '' })}
-                                className="btn btn-sm btn-primary"
-                            >
-                                Add Visible Case
-                            </button>
-                        </div>
-
-                        {visibleFields.map((field, index) => (
-                            <div key={field.id} className="border p-4 rounded-lg space-y-2">
-                                <div className="flex justify-end">
-                                    <button
-                                        type="button"
-                                        onClick={() => removeVisible(index)}
-                                        className="btn btn-xs btn-error"
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-
-                                <input
-                                    {...register(`visibleTestCases.${index}.input`)}
-                                    placeholder="Input"
-                                    className="input input-bordered w-full"
-                                />
-
-                                <input
-                                    {...register(`visibleTestCases.${index}.output`)}
-                                    placeholder="Output"
-                                    className="input input-bordered w-full"
-                                />
-
-                                <textarea
-                                    {...register(`visibleTestCases.${index}.explanation`)}
-                                    placeholder="Explanation"
-                                    className="textarea textarea-bordered w-full"
-                                />
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Hidden Test Cases */}
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                            <h3 className="font-medium">Hidden Test Cases</h3>
-                            <button
-                                type="button"
-                                onClick={() => appendHidden({ input: '', output: '' })}
-                                className="btn btn-sm btn-primary"
-                            >
-                                Add Hidden Case
-                            </button>
-                        </div>
-
-                        {hiddenFields.map((field, index) => (
-                            <div key={field.id} className="border p-4 rounded-lg space-y-2">
-                                <div className="flex justify-end">
-                                    <button
-                                        type="button"
-                                        onClick={() => removeHidden(index)}
-                                        className="btn btn-xs btn-error"
-                                    >
-                                        Remove
-                                    </button>
-                                </div>
-
-                                <input
-                                    {...register(`hiddenTestCases.${index}.input`)}
-                                    placeholder="Input"
-                                    className="input input-bordered w-full"
-                                />
-
-                                <input
-                                    {...register(`hiddenTestCases.${index}.output`)}
-                                    placeholder="Output"
-                                    className="input input-bordered w-full"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                {/* Tabs */}
+                <div className="mb-6 flex gap-2 overflow-x-auto rounded-2xl border border-slate-200/70 bg-white p-1.5 shadow-sm">
+                    {TABS.map((tab) => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setActiveTab(tab.key)}
+                            className={`flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold transition ${activeTab === tab.key
+                                ? 'bg-indigo-600 text-white shadow-sm'
+                                : 'text-slate-500 hover:bg-slate-100'
+                                }`}
+                        >
+                            <span>{tab.icon}</span> {tab.label}
+                        </button>
+                    ))}
                 </div>
 
-                {/* Code Templates */}
-                <div className="card bg-base-100 shadow-lg p-6">
-                    <h2 className="text-xl font-semibold mb-4">Code Templates</h2>
-
-                    <div className="space-y-6">
-                        {[0, 1, 2, 3].map((index) => (
-                            <div key={index} className="space-y-2">
-                                <h3 className="font-medium">
-                                    {index === 0 ? 'C++' : index === 1 ? 'Java' : index === 2 ? 'Python ' : 'JavaScript'}
-                                </h3>
-
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text">Initial Code</span>
-                                    </label>
-                                    <pre className="bg-base-300 p-4 rounded-lg">
-                                        <textarea
-                                            {...register(`BoilerplateCode.${index}.initialCode`)}
-                                            className="w-full bg-transparent font-mono"
-                                            rows={6}
-                                        />
-                                    </pre>
-                                </div>
-
-                                <div className="form-control">
-                                    <label className="label">
-                                        <span className="label-text">Reference Solution</span>
-                                    </label>
-                                    <pre className="bg-base-300 p-4 rounded-lg">
-                                        <textarea
-                                            {...register(`referenceSolution.${index}.completeCode`)}
-                                            className="w-full bg-transparent font-mono"
-                                            rows={6}
-                                        />
-                                    </pre>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <button type="submit" className="btn btn-primary w-full">
-                    Create Problem
-                </button>
-            </form>
+                {/* Content */}
+                {activeTab === 'create' && <ProblemForm mode="create" />}
+                {activeTab === 'manage' && <ManageProblems />}
+                {activeTab === 'admins' && <ManageAdmins />}
+            </div>
         </div>
     );
 }

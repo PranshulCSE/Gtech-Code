@@ -7,7 +7,7 @@ const SubmitBatch = async (submissions) => {
 
     const options = {
         method: 'POST',
-        url: process.env.JUDGE0_URL + '/submissions/batch',
+        url: process.env.JUDGE0_URL + '/submissions/batch?base64_encoded=true',
         params: {
             base64_encoded: 'false'
         },
@@ -62,18 +62,23 @@ const SubmitToken = async (tokens) => {
         }
     };
 
-    while (true) {
+    // FIX: added a max-attempts cap (was `while(true)` with no exit condition other than
+    // success -> if Judge0 ever got stuck on a submission, the request would hang forever
+    // and tie up server resources indefinitely).
+    const MAX_ATTEMPTS = 15; // ~30s total at 2s intervals
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         const result = await fetchData();
         // FIX: response me status nested object hai, isliye "r.status.id" use kiya, "r.status_id" galat tha
         const IsResultObtained = result.submissions.every((r) => r.status.id > 2);
 
         if (IsResultObtained) {
             return result.submissions;
-            // NOTE: return ke baad break kabhi chalta hi nahi, isliye hata diya (dead code tha)
         }
         await waiting(2000);
     }
 
+    throw new Error('Judge0 did not return a result in time. Please try again.');
 }
 
 const waiting = (timer) => {

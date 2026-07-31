@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axiosClient from '../../utils/axiosClient';
 import { logoutUser } from '../../authSlice';
 import { useToast } from '../components/ToastSystem.jsx';
+import Logo from '../components/Logo.jsx';
 
 const pageSize = 8;
 
@@ -128,11 +129,7 @@ function Homepage() {
             <aside className="portal-sidebar sticky top-0 hidden h-screen w-72 flex-col justify-between px-5 py-6 lg:flex">
                 <div>
                     <div className="flex items-center gap-3 rounded-3xl bg-slate-950 px-4 py-3 text-white shadow-lg shadow-slate-950/15">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-400 text-xl font-black text-slate-950">G</div>
-                        <div>
-                            <p className="text-xs uppercase tracking-[0.25em] text-white/65">GTech-Code</p>
-                            <p className="text-sm font-bold">Student Portal</p>
-                        </div>
+                        <Logo size={44} showWordmark />
                     </div>
 
                     <nav className="mt-8 space-y-2">
@@ -165,7 +162,7 @@ function Homepage() {
 
             <main className="flex-1 px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
                 <div className="mx-auto max-w-7xl space-y-6">
-                    <header className="portal-card flex flex-col gap-4 rounded-2rem p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 lg:hidden">
+                    <header className="portal-card flex flex-col gap-4 rounded-[2rem] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 lg:hidden">
                         <div>
                             <p className="text-xs font-bold uppercase tracking-[0.25em] text-slate-400">GTech-Code</p>
                             <h1 className="text-xl font-black text-slate-900">Dashboard</h1>
@@ -177,7 +174,7 @@ function Homepage() {
                         </div>
                     </header>
 
-                    <section className="portal-hero overflow-hidden rounded-2rem bg-[linear-gradient(135deg,#10224a_0%,#173d86_52%,#2f5ec3_100%)] p-6 text-white shadow-[0_30px_90px_rgba(15,23,42,0.22)] sm:p-8">
+                    <section className="portal-hero overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#10224a_0%,#173d86_52%,#2f5ec3_100%)] p-6 text-white shadow-[0_30px_90px_rgba(15,23,42,0.22)] sm:p-8">
                         <div className="grid gap-8 lg:grid-cols-[1.3fr_0.9fr] lg:items-center">
                             <div className="max-w-2xl">
                                 <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/75">Student portal</p>
@@ -234,7 +231,7 @@ function Homepage() {
                         ))}
                     </section>
 
-                    <section className="portal-card rounded-2rem p-5 sm:p-6">
+                    <section className="portal-card rounded-[2rem] p-5 sm:p-6">
                         <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr]">
                             <label className="block">
                                 <span className="mb-2 block text-sm font-semibold text-slate-700">Search</span>

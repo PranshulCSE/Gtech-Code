@@ -11,6 +11,7 @@ import VerifyEmail from './pages/VerifyEmail'
 import { checkAuth } from '../authSlice';
 import ProblemPage from './pages/ProblemPage'
 import Profile from './pages/Profile'
+// import BrowseProblems from './pages/BrowseProblems'
 
 function App() {
   // Checking if the User is Authenticated or not
@@ -42,7 +43,7 @@ function App() {
       return <Navigate to="/" replace />
     }
 
-    return children
+    return children;
   }
 
   return (
@@ -55,6 +56,7 @@ function App() {
         <Route path='/verify-email/:token' element={<VerifyEmail />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path="/admin" element={<RequireAdmin><AdminPanel /></RequireAdmin>} />
+        {/* <Route path="/problems" element={<RequireAuth><BrowseProblems /></RequireAuth>} /> */}
         <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
         <Route path="/problem/:problemid" element={<RequireAuth><ProblemPage /></RequireAuth>} />
       </Routes>

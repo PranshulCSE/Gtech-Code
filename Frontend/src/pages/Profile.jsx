@@ -124,7 +124,7 @@ function Profile() {
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.95),rgba(228,236,247,0.94)_35%,rgba(237,242,250,1)_75%)] px-4 py-6 text-slate-900 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl">
-                <div className="portal-hero mb-6 overflow-hidden rounded-2rem border border-white/70 bg-[linear-gradient(135deg,#10224a_0%,#173d86_55%,#2f5ec3_100%)] p-6 text-white shadow-[0_30px_90px_rgba(15,23,42,0.25)] sm:p-8">
+                <div className="portal-hero mb-6 overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,#10224a_0%,#173d86_55%,#2f5ec3_100%)] p-6 text-white shadow-[0_30px_90px_rgba(15,23,42,0.25)] sm:p-8">
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                         <div className="max-w-2xl">
                             <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/80">Account Center</p>
@@ -149,7 +149,7 @@ function Profile() {
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
-                    <div className="portal-card rounded-2rem p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+                    <div className="portal-card rounded-[2rem] p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
                         <h2 className="text-2xl font-black text-slate-900">Edit profile</h2>
                         <p className="mt-1 text-sm text-slate-500">Keep your public student profile up to date.</p>
                         <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={handleProfileSubmit}>
@@ -186,7 +186,7 @@ function Profile() {
                     </div>
 
                     <div className="grid gap-6">
-                        <div className="portal-card rounded-2rem p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+                        <div className="portal-card rounded-[2rem] p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
                             <h3 className="text-xl font-black text-slate-900">Change password</h3>
                             <form className="mt-4 space-y-4" onSubmit={handlePasswordSubmit}>
                                 <input

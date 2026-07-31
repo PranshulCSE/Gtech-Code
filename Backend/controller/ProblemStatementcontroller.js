@@ -6,12 +6,12 @@ const Submission = require('../model/submission');
 
 
 const problemCreate = async (req, res) => {
-    const { title, description, difficulty, tags, VisibletestCases, InvisibletestCases, BoilerplateCode, createdBy, ReferenceSolution, isApproved, isRejected } = req.body;
+    const { title, description, difficulty, tags, VisibleTestCases, InvisibleTestCases, BoilerplateCode, createdBy, ReferenceSolution, isApproved, isRejected } = req.body;
     try {
         if (!ReferenceSolution || !Array.isArray(ReferenceSolution)) {
             return res.status(400).send("Reference Solution is required and must be an array");
         }
-        if (!VisibletestCases || !Array.isArray(VisibletestCases)) {
+        if (!VisibleTestCases || !Array.isArray(VisibleTestCases)) {
             return res.status(400).send("Visible test cases are required and must be an array");
         }
 
@@ -30,7 +30,7 @@ const problemCreate = async (req, res) => {
             const languageId = getLanguageById(language);
 
             // Creating Submission Array for Batch Submission for Judge Zero
-            const submissions = VisibletestCases.map((testcases) => ({
+            const submissions = VisibleTestCases.map((testcases) => ({
                 source_code: code,
                 language_id: languageId,
                 stdin: testcases.input,
@@ -60,14 +60,14 @@ const problemCreate = async (req, res) => {
         res.status(201).send("Problem Statement Created Successfully");
     }
     catch (err) {
-        res.status(500).send("Error in creating problem" + err.message);
+        res.status(500).send("Error in creating problem: " + err.message);
     }
 }
 
 const problemUpdate = async (req, res) => {
     const { id } = req.params;
 
-    const { title, description, difficulty, tags, VisibletestCases, InvisibletestCases, BoilerplateCode, createdBy, ReferenceSolution, isApproved, isRejected } = req.body;
+    const { title, description, difficulty, tags, VisibleTestCases, InvisibleTestCases, BoilerplateCode, createdBy, ReferenceSolution, isApproved, isRejected } = req.body;
     try {
         if (!id) {
             return res.status(400).send("Problem Statement id is required");
@@ -77,9 +77,9 @@ const problemUpdate = async (req, res) => {
             return res.status(404).send("Problem Statement not found");
         }
 
-        if (ReferenceSolution !== undefined || VisibletestCases !== undefined) {
+        if (ReferenceSolution !== undefined || VisibleTestCases !== undefined) {
             const finalSolutions = ReferenceSolution !== undefined ? ReferenceSolution : problem.ReferenceSolution;
-            const finalTestCases = VisibletestCases !== undefined ? VisibletestCases : problem.VisibletestCases;
+            const finalTestCases = VisibleTestCases !== undefined ? VisibleTestCases : problem.VisibleTestCases;
 
             if (!Array.isArray(finalSolutions)) {
                 return res.status(400).send("Reference Solution must be an array");
@@ -127,7 +127,7 @@ const problemUpdate = async (req, res) => {
         res.status(200).json({ message: "Problem Statement updated successfully", updatedProblem });
     }
     catch (err) {
-        res.status(500).send("Error in updating problem" + err.message);
+        res.status(500).send("Error in updating problem: " + err.message);
     }
 }
 
@@ -145,7 +145,7 @@ const problemDelete = async (req, res) => {
         res.status(200).send("Problem Statement deleted successfully");
     }
     catch (err) {
-        res.status(500).send("Error in deleting problem" + err.message);
+        res.status(500).send("Error in deleting problem: " + err.message);
     }
 }
 
@@ -162,7 +162,7 @@ const problemFetch = async (req, res) => {
         res.status(200).send(problem);
     }
     catch (err) {
-        res.status(500).send("Error in fetching problem" + err.message);
+        res.status(500).send("Error in fetching problem: " + err.message);
     }
 }
 
@@ -170,13 +170,12 @@ const problemFetchAll = async (req, res) => {
 
     try {
         const problems = await ProblemStatement.find({}).select('_id title description difficulty tags ');
-        if (problems.length === 0) {
-            return res.status(404).send("No Problem Statements found");
-        }
+        // FIX: was returning 404 for an empty list, which the frontend dashboard would
+        // surface as an error toast even on a perfectly normal "no problems yet" state.
         res.status(200).send(problems);
     }
     catch (err) {
-        res.status(500).send("Error in fetching all problems" + err.message);
+        res.status(500).send("Error in fetching all problems: " + err.message);
     }
 }
 
@@ -191,7 +190,7 @@ const solvedProblembyUser = async (req, res) => {
         res.status(200).send(user.problemsolved);
     }
     catch (err) {
-        res.status(500).send("Error in fetching solved problems by user" + err.message);
+        res.status(500).send("Error in fetching solved problems by user: " + err.message);
     }
 }
 
@@ -199,14 +198,11 @@ const submissionbyUser = async (req, res) => {
     try {
         const userId = req.user._id;
         const problemId = req.params.id;
-        const submissions = await Submission.find({ userId, problemId });
-        if (submissions.length === 0) {
-            return res.status(404).send("No submissions found for this problem by the user");
-        }
-        res.status(200).send(submissions);
+        const submissions = await Submission.find({ userId, problemId }).sort({ createdAt: -1 });
+        res.status(200).send(submissions); // no submissions yet = normal state, not an error
     }
     catch (err) {
-        res.status(500).send("Error in fetching submissions by user" + err.message);
+        res.status(500).send("Error in fetching submissions by user: " + err.message);
     }
 }
 

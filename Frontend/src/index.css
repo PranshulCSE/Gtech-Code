@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
-@plugin "daisyui";
+/* FIX: without pinning a theme, daisyUI auto-switches to "dark" whenever the OS/browser
+   prefers dark mode. The rest of the app uses custom light "portal" CSS regardless of
+   OS theme, so any page using raw daisyUI classes (like AdminPanel) rendered as
+   near-black, low-contrast boxes while everything else stayed light - a mismatch, not
+   an actual missing-styles bug. Pinning "light" makes daisyUI consistent with the rest
+   of the app on every device. */
+@plugin "daisyui" {
+  themes: light --default;
+}
 
 :root {
     color-scheme: light;

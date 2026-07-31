@@ -1,10 +1,13 @@
 const user = require('../model/User');
 const ValidateUser = require('../utils/Validator');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 
 const registerAdmin = async (req, res) => {
     try {
+        if (req.user?.email !== process.env.SUPERADMIN_EMAIL) {
+            return res.status(403).send('Only the super admin can create new admins');
+        }
         ValidateUser(req.body);
 
         const { firstname, email, password } = req.body;
@@ -49,6 +52,9 @@ const getAllAdmins = async (req, res) => {
 
 const deleteAdmin = async (req, res) => {
     try {
+        if (req.user?.email !== process.env.SUPERADMIN_EMAIL) {
+            return res.status(403).send('Only the super admin can remove admins');
+        }
         const adminId = req.params.id;
 
         if (req.user?._id?.toString() === adminId) {

@@ -57,15 +57,15 @@ const ProblemStatementSchema = new Schema({
     ],
     BoilerplateCode: [
         {
-        language:{
-            type: String,
-            required: true
-        },
-        startingCode: {
-            type: String,
-            required: true
+            language: {
+                type: String,
+                required: true
+            },
+            startingCode: {
+                type: String,
+                required: true
+            }
         }
-    }
     ],
     createdBy: {
         type: Schema.Types.ObjectId,
