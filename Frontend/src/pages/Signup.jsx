@@ -56,11 +56,13 @@ function Signup() {
     return (
         <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(255,192,125,0.18),transparent_25%),linear-gradient(180deg,#f7f9fd_0%,#eef3fa_100%)] px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-                <div className="portal-card hidden overflow-hidden rounded-[2.25rem] bg-[linear-gradient(145deg,#10224a_0%,#173d86_55%,#2f5ec3_100%)] p-10 text-white shadow-[0_30px_90px_rgba(15,23,42,0.24)] lg:block">
-                    <Logo size={48} showWordmark className="mb-6" />
-                    <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/75">Join the portal</p>
-                    <h1 className="mt-5 text-5xl font-black leading-tight">Create your academic workspace in minutes.</h1>
-                    <p className="mt-4 text-base leading-7 text-white/80">Get access to coding problems, progress analytics, bookmarks, and a dashboard that stays responsive on every screen.</p>
+                <div className="portal-hero hidden overflow-hidden rounded-[2.25rem] bg-[linear-gradient(145deg,#10224a_0%,#173d86_55%,#2f5ec3_100%)] p-10 text-white shadow-[0_30px_90px_rgba(15,23,42,0.24)] lg:block">
+                    <div className="max-w-lg">
+                        <Logo size={48} showWordmark className="mb-6" />
+                        <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/75">Join the portal</p>
+                        <h1 className="mt-5 text-5xl font-black leading-tight">Create your academic workspace in minutes.</h1>
+                        <p className="mt-4 text-base leading-7 text-white/80">Get access to coding problems, progress analytics, bookmarks, and a dashboard that stays responsive on every screen.</p>
+                    </div>
                     <div className="mt-10 grid gap-4 sm:grid-cols-2">
                         {['Email verification', 'Fast problem solving', 'Progress tracking', 'Campus-style UI'].map((item) => (
                             <div key={item} className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-xl">

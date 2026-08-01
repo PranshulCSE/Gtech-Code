@@ -135,6 +135,7 @@ function Homepage() {
                     <nav className="mt-8 space-y-2">
                         {[
                             { to: '/', label: 'Dashboard' },
+                            { to: '/browse', label: 'Browse Problems' },
                             { to: '/profile', label: 'Profile' },
                             ...(user?.role === 'admin' ? [{ to: '/admin', label: 'Admin panel' }] : [])
                         ].map((item) => (

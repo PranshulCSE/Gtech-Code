@@ -19,22 +19,29 @@ const registerUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        req.body.role = 'user'; // Assigning the role as 'user' for all new registrations
-
         const rawVerificationToken = crypto.randomBytes(32).toString('hex');
         const hashedVerificationToken = crypto.createHash('sha256').update(rawVerificationToken).digest('hex');
         const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
 
+        // FIX: Explicitly assign only whitelisted fields to prevent mass assignment
         const newUser = await user.create({
-            ...req.body,
+            firstname,
+            email,
             password: hashedPassword,
+            role: 'user', // Always set role as 'user' for new registrations
+            isVerified: false, // Always require email verification
             verificationToken: hashedVerificationToken,
             verificationTokenExpire: Date.now() + 24 * 60 * 60 * 1000
         });
 
         const token = jwt.sign({ _id: newUser._id, email: newUser.email, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            maxAge: 60 * 60 * 1000,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        });
 
         const verificationUrl = `${clientUrl}/verify-email/${rawVerificationToken}`;
 
@@ -94,7 +101,12 @@ const loginUser = async (req, res) => {
         const token = jwt.sign({ _id: existingUser._id, email: existingUser.email, role: existingUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' }); // FIXED: role was missing here (registerUser token had it, login token didn't) -> auth/role middleware would break right after login.
 
         //   Setting the token in the Cookie and Setting its MaxAge to 1 hour
-        res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            maxAge: 60 * 60 * 1000,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        });
 
         // Extracting Password
         const UserWithoutPassword = existingUser.toObject();

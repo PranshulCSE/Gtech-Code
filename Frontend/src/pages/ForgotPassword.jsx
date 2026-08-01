@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axiosClient from '../../utils/axiosClient';
 
 function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -13,21 +14,9 @@ function ForgotPassword() {
         setLoading(true);
 
         try {
-            const response = await fetch('/user/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email })
-            });
+            const response = await axiosClient.post('/user/forgot-password', { email });
 
-            const responseText = await response.text();
-
-            if (!response.ok) {
-                throw new Error(responseText || 'Unable to request reset link');
-            }
-
-            setMessage(responseText);
+            setMessage(response.data?.message || 'Reset link sent to your email');
             setEmail('');
         } catch (submitError) {
             setError(submitError.message);

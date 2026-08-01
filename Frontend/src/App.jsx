@@ -11,7 +11,23 @@ import VerifyEmail from './pages/VerifyEmail'
 import { checkAuth } from '../authSlice';
 import ProblemPage from './pages/ProblemPage'
 import Profile from './pages/Profile'
-// import BrowseProblems from './pages/BrowseProblems'
+import BrowseProblems from './pages/BrowseProblems'
+
+// FIX: Move RequireAuth and RequireAdmin outside App to prevent unnecessary remounts
+// These components should have stable identity across renders
+const RequireAuth = ({ children, isAuthenticated }) => {
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  return children
+}
+
+const RequireAdmin = ({ children, isAuthenticated, user }) => {
+  if (!isAuthenticated || user?.role !== 'admin') {
+    return <Navigate to="/" replace />
+  }
+  return children;
+}
 
 function App() {
   // Checking if the User is Authenticated or not
@@ -30,35 +46,19 @@ function App() {
     )
   }
 
-  const RequireAuth = ({ children }) => {
-    if (!isAuthenticated) {
-      return <Navigate to="/login" replace />
-    }
-
-    return children
-  }
-
-  const RequireAdmin = ({ children }) => {
-    if (!isAuthenticated || user?.role !== 'admin') {
-      return <Navigate to="/" replace />
-    }
-
-    return children;
-  }
-
   return (
     <>
       <Routes>
-        <Route path='/' element={<RequireAuth><Homepage /></RequireAuth>} />
+        <Route path='/' element={<RequireAuth isAuthenticated={isAuthenticated}><Homepage /></RequireAuth>} />
         <Route path='/login' element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
         <Route path='/signup' element={isAuthenticated ? <Navigate to="/" replace /> : <Signup />} />
         <Route path='/forgot-password' element={isAuthenticated ? <Navigate to="/" replace /> : <ForgotPassword />} />
         <Route path='/verify-email/:token' element={<VerifyEmail />} />
         <Route path='/reset-password/:token' element={<ResetPassword />} />
-        <Route path="/admin" element={<RequireAdmin><AdminPanel /></RequireAdmin>} />
-        {/* <Route path="/problems" element={<RequireAuth><BrowseProblems /></RequireAuth>} /> */}
-        <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-        <Route path="/problem/:problemid" element={<RequireAuth><ProblemPage /></RequireAuth>} />
+        <Route path="/admin" element={<RequireAdmin isAuthenticated={isAuthenticated} user={user}><AdminPanel /></RequireAdmin>} />
+        <Route path="/browse" element={<RequireAuth isAuthenticated={isAuthenticated}><BrowseProblems /></RequireAuth>} />
+        <Route path="/profile" element={<RequireAuth isAuthenticated={isAuthenticated}><Profile /></RequireAuth>} />
+        <Route path="/problem/:problemid" element={<RequireAuth isAuthenticated={isAuthenticated}><ProblemPage /></RequireAuth>} />
       </Routes>
     </>
   )

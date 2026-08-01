@@ -14,7 +14,7 @@ const AdminDelete = () => {
   const fetchProblems = async () => {
     try {
       setLoading(true);
-      const { data } = await axiosClient.get('/problem/getAllProblem');
+      const { data } = await axiosClient.get('/problem/admin/all');
       setProblems(data);
     } catch (err) {
       setError('Failed to fetch problems');
@@ -26,7 +26,7 @@ const AdminDelete = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this problem?')) return;
-    
+
     try {
       await axiosClient.delete(`/problem/delete/${id}`);
       setProblems(problems.filter(problem => problem._id !== id));
@@ -81,13 +81,12 @@ const AdminDelete = () => {
                 <th>{index + 1}</th>
                 <td>{problem.title}</td>
                 <td>
-                  <span className={`badge ${
-                    problem.difficulty === 'Easy' 
-                      ? 'badge-success' 
-                      : problem.difficulty === 'Medium' 
-                        ? 'badge-warning' 
+                  <span className={`badge ${problem.difficulty === 'Easy'
+                      ? 'badge-success'
+                      : problem.difficulty === 'Medium'
+                        ? 'badge-warning'
                         : 'badge-error'
-                  }`}>
+                    }`}>
                     {problem.difficulty}
                   </span>
                 </td>
@@ -98,7 +97,7 @@ const AdminDelete = () => {
                 </td>
                 <td>
                   <div className="flex space-x-2">
-                    <button 
+                    <button
                       onClick={() => handleDelete(problem._id)}
                       className="btn btn-sm btn-error"
                     >

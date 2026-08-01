@@ -34,7 +34,7 @@ export const checkAuth = createAsyncThunk(
       return data;
     } catch (error) {
       if (error.response?.status === 401) {
-        return rejectWithValue(null); // Special case for no session
+        return null; // No active session is a valid unauthenticated state
       }
       return rejectWithValue(error.response?.data?.message || error.message || 'Request failed');
     }
@@ -112,6 +112,7 @@ const authSlice = createSlice({
         state.checkingAuth = false;
         state.isAuthenticated = !!action.payload;
         state.user = action.payload;
+        state.error = null;
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.checkingAuth = false;

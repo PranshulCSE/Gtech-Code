@@ -1,6 +1,7 @@
 const user = require('../model/User');
 const ValidateUser = require('../utils/Validator');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 
 const registerAdmin = async (req, res) => {
@@ -27,7 +28,12 @@ const registerAdmin = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.cookie('token', token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            maxAge: 60 * 60 * 1000,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        });
 
         const safeAdmin = newUser.toObject();
         delete safeAdmin.password;

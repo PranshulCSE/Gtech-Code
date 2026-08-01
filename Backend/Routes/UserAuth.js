@@ -29,16 +29,20 @@ authRouter.post('/verify-email', verifyUserEmail);
 authRouter.post('/verify-email/:token', verifyUserEmail);
 
 authRouter.get('/check', userMiddleware, async (req, res) => {
-    // Our Auth middleware attaches the decoded token payload to req.user
-    const userId = req.user._id;
+    try {
+        // Our Auth middleware attaches the decoded token payload to req.user
+        const userId = req.user._id;
 
-    const foundUser = await user.findById(userId).select('-password'); // Exclude password from the return data
-    if (!foundUser) {
-        return res.status(404).json({ message: 'User not found' });
+        const foundUser = await user.findById(userId).select('-password'); // Exclude password from the return data
+        if (!foundUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const reply = { ...foundUser.toObject(), role: req.user.role };
+        res.status(200).json(reply);
+    } catch (err) {
+        res.status(500).json({ message: 'Error checking user: ' + err.message });
     }
-
-    const reply = { ...foundUser.toObject(), role: req.user.role };
-    res.status(200).json(reply);
 })
 
 // Admin Routes

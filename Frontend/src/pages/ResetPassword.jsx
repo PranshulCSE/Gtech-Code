@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router';
+import axiosClient from '../../utils/axiosClient';
 
 function ResetPassword() {
     const { token } = useParams();
@@ -16,21 +17,9 @@ function ResetPassword() {
         setLoading(true);
 
         try {
-            const response = await fetch('/user/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token, newPassword })
-            });
+            const response = await axiosClient.post('/user/reset-password', { token, newPassword });
 
-            const responseText = await response.text();
-
-            if (!response.ok) {
-                throw new Error(responseText || 'Unable to reset password');
-            }
-
-            setMessage(responseText);
+            setMessage(response.data?.message || 'Password reset successfully');
             setNewPassword('');
         } catch (submitError) {
             setError(submitError.message);
@@ -79,16 +68,15 @@ function ResetPassword() {
                             </div>
                         </div>
 
+                        {error && <p className="text-error mt-4">{error}</p>}
+                        {message && <p className="text-success mt-4">{message}</p>}
+
+                        <div className="form-control mt-6 flex justify-center">
+                            <button type="submit" className="btn btn-primary" disabled={loading || !token}>
+                                {loading ? 'Resetting...' : 'Reset Password'}
+                            </button>
+                        </div>
                     </form>
-
-                    {error && <p className="text-error mt-4">{error}</p>}
-                    {message && <p className="text-success mt-4">{message}</p>}
-
-                    <div className="form-control mt-6 flex justify-center">
-                        <button type="submit" className="btn btn-primary" disabled={loading || !token}>
-                            {loading ? 'Resetting...' : 'Reset Password'}
-                        </button>
-                    </div>
                 </div>
 
             </div>

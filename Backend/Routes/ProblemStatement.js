@@ -3,7 +3,7 @@ const express = require('express');
 const problemRouter = express.Router();
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const UserMiddleware = require('../middlewares/Usermiddleware');
-const { problemCreate, problemUpdate, problemDelete, problemFetch, problemFetchAll, solvedProblembyUser, submissionbyUser } = require('../controller/ProblemStatementcontroller');
+const { problemCreate, problemUpdate, problemDelete, problemFetch, problemFetchAll, problemFetchAllForAdmin, solvedProblembyUser, submissionbyUser, problemFetchForAdmin } = require('../controller/ProblemStatementcontroller');
 
 // All the three controller function required Admin Acces
 // So they will be protected by Admin Middleware
@@ -22,6 +22,9 @@ problemRouter.get("/problemById/:id", UserMiddleware, problemFetch);
 // Fetching all Problems
 problemRouter.get("/", UserMiddleware, problemFetchAll);
 problemRouter.get("/getAllProblem", UserMiddleware, problemFetchAll);
+problemRouter.get("/admin/all", adminMiddleware, problemFetchAllForAdmin);
+// NEW: Admin endpoint to fetch full problem for editing (includes solutions & boilerplate)
+problemRouter.get("/admin/:id", adminMiddleware, problemFetchForAdmin);
 // Problem Solved By User
 problemRouter.get("/user", UserMiddleware, solvedProblembyUser);
 problemRouter.get("/problemSolvedByUser", UserMiddleware, solvedProblembyUser);

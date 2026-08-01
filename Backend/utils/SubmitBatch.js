@@ -35,9 +35,10 @@ const SubmitBatch = async (submissions) => {
 
 
 
-const SubmitToken = async (tokens) => {
+const SubmitToken = async (tokens, options = {}) => {
+    const { maxAttempts = 15, delayMs = 2000 } = options;
 
-    const options = {
+    const requestOptions = {
         method: 'GET',
         url: process.env.JUDGE0_URL + '/submissions/batch',
         params: {
@@ -55,19 +56,15 @@ const SubmitToken = async (tokens) => {
 
     async function fetchData() {
         try {
-            const response = await axios.request(options);
+            const response = await axios.request(requestOptions);
             return response.data;
         } catch (error) {
             throw new Error(`Error fetching submission results: ${error.message}`);
         }
     };
 
-    // FIX: added a max-attempts cap (was `while(true)` with no exit condition other than
-    // success -> if Judge0 ever got stuck on a submission, the request would hang forever
-    // and tie up server resources indefinitely).
-    const MAX_ATTEMPTS = 15; // ~30s total at 2s intervals
-
-    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    // FIX: cap polling so a slow Judge0 queue does not hang forever.
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const result = await fetchData();
         // FIX: response me status nested object hai, isliye "r.status.id" use kiya, "r.status_id" galat tha
         const IsResultObtained = result.submissions.every((r) => r.status.id > 2);
@@ -75,7 +72,7 @@ const SubmitToken = async (tokens) => {
         if (IsResultObtained) {
             return result.submissions;
         }
-        await waiting(2000);
+        await waiting(delayMs);
     }
 
     throw new Error('Judge0 did not return a result in time. Please try again.');

@@ -19,7 +19,7 @@ function ManageProblems() {
         setLoading(true);
         setError('');
         axiosClient
-            .get('/problem/getAllProblem')
+            .get('/problem/admin/all')
             .then(({ data }) => setProblems(Array.isArray(data) ? data : []))
             .catch((err) => {
                 const msg = typeof err.response?.data === 'string' ? err.response.data : err.response?.data?.message;
