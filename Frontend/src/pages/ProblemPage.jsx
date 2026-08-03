@@ -13,6 +13,28 @@ const langMap = {
   python: 'Python' // FIX: Python is fully supported by the backend/Judge0 but was missing here
 };
 
+const normalizeLanguage = (language) => {
+  const value = (language || '').toLowerCase().replace(/\s+/g, '');
+
+  if (value === 'c++' || value === 'cplusplus' || value === 'cpp') {
+    return 'cpp';
+  }
+
+  if (value === 'javascript' || value === 'js') {
+    return 'javascript';
+  }
+
+  if (value === 'java') {
+    return 'java';
+  }
+
+  if (value === 'python' || value === 'py') {
+    return 'python';
+  }
+
+  return value;
+};
+
 
 const ProblemPage = () => {
   const [problem, setProblem] = useState(null);
@@ -25,7 +47,7 @@ const ProblemPage = () => {
   const [activeRightTab, setActiveRightTab] = useState('code');
   const editorRef = useRef(null);
   const { problemid } = useParams();
-  
+
 
   const { handleSubmit } = useForm();
 
@@ -37,9 +59,9 @@ const ProblemPage = () => {
       try {
         const response = await axiosClient.get(`/problem/problemById/${problemid}`);
         const problemData = response.data;
-        const starterLanguage = langMap[selectedLanguage];
+        const starterLanguage = normalizeLanguage(selectedLanguage);
         const initialCode = problemData.BoilerplateCode?.find(
-          (sc) => sc.language?.toLowerCase() === starterLanguage?.toLowerCase()
+          (sc) => normalizeLanguage(sc.language) === starterLanguage
         )?.startingCode || '';
 
         setProblem(problemData);
@@ -57,9 +79,9 @@ const ProblemPage = () => {
   // Update code when language changes
   useEffect(() => {
     if (problem) {
-      const starterLanguage = langMap[selectedLanguage];
+      const starterLanguage = normalizeLanguage(selectedLanguage);
       const initialCode = problem.BoilerplateCode?.find(
-        (sc) => sc.language?.toLowerCase() === starterLanguage?.toLowerCase()
+        (sc) => normalizeLanguage(sc.language) === starterLanguage
       )?.startingCode || '';
       setCode(initialCode);
     }
@@ -114,6 +136,13 @@ const ProblemPage = () => {
       });
 
       setSubmitResult(response.data);
+      if (response.data?.accepted && response.data?.referenceSolutions?.length) {
+        setProblem((prev) => prev ? {
+          ...prev,
+          ReferenceSolution: response.data.referenceSolutions
+        } : prev);
+        setActiveLeftTab('solutions');
+      }
       setLoading(false);
       setActiveRightTab('result');
 
@@ -247,7 +276,7 @@ const ProblemPage = () => {
                     {problem.ReferenceSolution?.map((solution, index) => (
                       <div key={index} className="border border-base-300 rounded-lg">
                         <div className="bg-base-200 px-4 py-2 rounded-t-lg">
-                          <h3 className="font-semibold">{problem?.title} - {solution?.language}</h3>
+                          <h3 className="font-semibold">{problem?.title} - {langMap[normalizeLanguage(solution?.language)] || solution?.language}</h3>
                         </div>
                         <div className="p-4">
                           <pre className="bg-base-300 p-4 rounded text-sm overflow-x-auto">
@@ -269,9 +298,9 @@ const ProblemPage = () => {
                 </div>
               )}
               {activeLeftTab === 'ChatAi' && (
-                <div className="prose max-w-none text-gray-500">
-                <h2 className="text-xl font-bold mb-4">Chat with Your Ai Instructor</h2>
-                <ChatAi/>
+                <div className="max-w-none">
+                  <h2 className="text-xl font-bold mb-4">Chat with Your Ai Instructor</h2>
+                  <ChatAi problem={problem} />
                 </div>
               )}
             </>

@@ -129,11 +129,24 @@ const problemFetch = async (req, res) => {
         if (!id) {
             return res.status(400).send("Problem Statement id is required");
         }
-        const problem = await ProblemStatement.findById(id).select('-ReferenceSolution -createdBy -isApproved -isRejected');
+        const problem = await ProblemStatement.findById(id);
         if (!problem) {
             return res.status(404).send("Problem Statement not found");
         }
-        res.status(200).send(problem);
+
+        const problemData = problem.toObject();
+        const solvedProblems = req.user?.problemsolved || [];
+        const isSolved = solvedProblems.some((solvedProblemId) => solvedProblemId.toString() === problem._id.toString());
+
+        delete problemData.createdBy;
+        delete problemData.isApproved;
+        delete problemData.isRejected;
+
+        if (!isSolved) {
+            delete problemData.ReferenceSolution;
+        }
+
+        res.status(200).send(problemData);
     }
     catch (err) {
         res.status(500).send("Error in fetching problem: " + err.message);

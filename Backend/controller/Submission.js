@@ -108,7 +108,8 @@ const submitCode = async (req, res) => {
             totalTestCases: submittedResult.testCasesTotal,
             passedTestCases: testCasesPassed,
             runtime,
-            memory
+            memory,
+            referenceSolutions: status === 'accepted' ? Problem.ReferenceSolution : []
         });
 
     }

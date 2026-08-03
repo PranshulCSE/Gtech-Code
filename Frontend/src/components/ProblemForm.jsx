@@ -37,8 +37,9 @@ const toBackendLang = (lang) => {
 
 // backend-value -> Display-label (e.g. "cpp" -> "C++"), used when pre-filling the edit form
 const toDisplayLang = (lang) => {
-    const map = { cpp: 'C++', java: 'Java', python: 'Python', javascript: 'JavaScript' };
-    return map[lang] || lang;
+    const normalized = (lang || '').toLowerCase();
+    const map = { cpp: 'C++', 'c++': 'C++', java: 'Java', python: 'Python', javascript: 'JavaScript' };
+    return map[normalized] || lang;
 };
 
 const emptyBoilerplate = LANGUAGES.map((language) => ({ language, initialCode: '' }));
