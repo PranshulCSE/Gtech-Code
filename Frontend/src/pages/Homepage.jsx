@@ -328,9 +328,9 @@ function Homepage() {
 
                         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                             {[
-                                { title: 'Solved Problems', description: 'Review the problems you have already completed.', icon: '✓', tone: 'bg-emerald-50 text-emerald-700' },
-                                { title: 'Bookmarks', description: 'Open the problems you saved for later.', icon: '★', tone: 'bg-amber-50 text-amber-700' },
-                                { title: 'Recent Activity', description: 'Check your latest submissions and attempts.', icon: '↻', tone: 'bg-blue-50 text-blue-700' }
+                                { title: 'Solved Problems', description: 'Review the problems you have already completed.', icon: '✓', tone: 'bg-emerald-50 text-emerald-700', onClick: () => navigate('/problems?status=solved') },
+                                { title: 'Bookmarks', description: 'Open the problems you saved for later.', icon: '★', tone: 'bg-amber-50 text-amber-700',  onClick: () => navigate('/problems?status=bookmarked') },
+                                { title: 'Recent Activity', description: 'Check your latest submissions and attempts.', icon: '↻', tone: 'bg-blue-50 text-blue-700', onClick: () => navigate('/profile')}
                             ].map((card) => (
                                 <div key={card.title} className="portal-card rounded-[1.75rem] p-5 transition hover:-translate-y-0.5">
                                     <div className={`flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-black ${card.tone}`}>{card.icon}</div>
