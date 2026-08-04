@@ -14,12 +14,16 @@ function ChatAi({ problem }) {
         setMessages([
             {
                 role: 'model',
-                content: problem
-                    ? `I can help you reason about ${problem.title}, explain edge cases, or debug your approach.`
-                    : 'Ask me for a hint, an explanation, or help debugging your approach.'
+                parts: [{
+                    text: problem
+                        ? `I can help you reason about ${problem.title}, explain edge cases, or debug your approach.`
+                        : 'Ask me for a hint, an explanation, or help debugging your approach.'
+                }]
             }
         ]);
     }, [problem?._id, problem?.title]);
+
+    const getMessageText = (msg) => msg?.parts?.[0]?.text || msg?.content || '';
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -27,26 +31,31 @@ function ChatAi({ problem }) {
 
     const onSubmit = async (data) => {
         setIsSending(true);
-        setMessages(prev => [...prev, { role: 'user', content: data.message }]);
+        const userMessage = { role: 'user', parts: [{ text: data.message }] };
+        const nextMessages = [...messages, userMessage];
+        setMessages(nextMessages);
         reset();
 
         try {
-            const response = await axiosClient.post("/chat/ai", {
+            const response = await axiosClient.post("/ai/chat", {
                 message: data.message,
-                problemTitle: problem?.title,
-                problemDescription: problem?.description
+                messages: nextMessages,
+                title: problem?.title,
+                description: problem?.description,
+                testCases: problem?.VisibleTestCases,
+                BoilerPlateCode: problem?.BoilerplateCode
             });
 
 
             setMessages(prev => [...prev, {
                 role: 'model',
-                content: response.data.message || response.data.content
+                parts: [{ text: response.data.message }]
             }]);
         } catch (error) {
             console.error("API Error:", error);
             setMessages(prev => [...prev, {
                 role: 'model',
-                content: "Sorry, I encountered an error"
+                parts: [{ text: "Sorry, I encountered an error" }]
             }]);
         } finally {
             setIsSending(false);
@@ -61,7 +70,7 @@ function ChatAi({ problem }) {
     ];
 
     return (
-        <div className="flex h-full min-h-[520px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 shadow-xl">
+        <div className="flex h-full min-h-130 flex-col overflow-hidden rounded-3xl border border-slate-200 bg-linear-to-br from-slate-50 via-white to-indigo-50 shadow-xl">
             <div className="border-b border-slate-200 bg-slate-900 px-5 py-4 text-white">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-indigo-200">
@@ -86,7 +95,7 @@ function ChatAi({ problem }) {
                         className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}
                     >
                         <div className={`chat-bubble max-w-[85%] whitespace-pre-wrap leading-relaxed ${msg.role === 'user' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-800 shadow-sm border border-slate-200'}`}>
-                            {msg.content}
+                            {getMessageText(msg)}
                         </div>
                     </div>
                 ))}
@@ -110,7 +119,7 @@ function ChatAi({ problem }) {
                     <div className="flex items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-2 shadow-inner">
                         <textarea
                             placeholder="Ask for a hint, explain a mistake, or request a dry run..."
-                            className="min-h-[48px] flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-slate-400"
+                            className="min-h-12 flex-1 resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-slate-400"
                             rows={1}
                             {...register("message", { required: true, minLength: 2 })}
                         />

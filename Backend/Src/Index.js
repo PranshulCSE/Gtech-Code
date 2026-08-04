@@ -8,6 +8,7 @@ const submitRouter = require("../Routes/Submit");
 const ProblemRouter = require("../Routes/ProblemStatement");
 const RedisClient = require('../config/Redis');
 const User = require('../model/User');
+const AiRouter = require("../Routes/AiChat");
 const cors = require('cors');
 
 const clientOrigin = process.env.CLIENT_URL;
@@ -33,6 +34,9 @@ app.use("/problem", ProblemRouter);
 
 // Routing User to Submit Problem
 app.use("/submission", submitRouter);
+
+// Routing User to AI Chat Route
+app.use("/ai", AiRouter);
 
 // To Connect MongoDB Database and Start the Server
 const InitializeConnection = async () => {
