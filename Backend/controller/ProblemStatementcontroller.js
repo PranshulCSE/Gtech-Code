@@ -3,6 +3,7 @@ const { SubmitBatch, SubmitToken } = require('../utils/SubmitBatch');
 const ProblemStatement = require('../model/PS');
 const User = require('../model/User');
 const Submission = require('../model/submission');
+const solutionVideo = require('../model/solutionVideo');
 
 const validateReferenceSolutions = async (referenceSolutions, visibleTestCases) => {
     const validations = referenceSolutions.map(async ({ language, code }) => {
@@ -134,10 +135,24 @@ const problemFetch = async (req, res) => {
             return res.status(404).send("Problem Statement not found");
         }
 
+        const videos = await SolutionVideo.find({ problemId: id });
+
         const problemData = problem.toObject();
         const solvedProblems = req.user?.problemsolved || [];
         const isSolved = solvedProblems.some((solvedProblemId) => solvedProblemId.toString() === problem._id.toString());
 
+        if (videos) {
+            problemData.secureUrl = secureUrl;
+            problemData.cloudinaryPublicId = cloudinaryPublicId;
+            problemData.thumbnailUrl = thumbnailUrl;
+            problemData.duration = duration;
+
+            if (!isSolved) {
+                delete problemData.ReferenceSolution;
+            }
+
+            return res.status(200).send(problemData);
+        }
         delete problemData.createdBy;
         delete problemData.isApproved;
         delete problemData.isRejected;
