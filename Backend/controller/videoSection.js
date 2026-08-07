@@ -5,18 +5,25 @@ const SolutionVideo = require("../model/solutionVideo");
 const { sanitizeFilter } = require('mongoose');
 require('dotenv').config();
 
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+const cloudApiKey = process.env.CLOUDINARY_API_KEY?.trim();
+const cloudApiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
+
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: cloudName,
+  api_key: cloudApiKey,
+  api_secret: cloudApiSecret
 });
 
 const generateUploadSignature = async (req, res) => {
   try {
     const { problemId } = req.params;
 
-    const userId = req.result._id;
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized access' });
+    }
     // Verify problem exists
     const problem = await Problem.findById(problemId);
     if (!problem) {
@@ -36,16 +43,16 @@ const generateUploadSignature = async (req, res) => {
     // Generate signature
     const signature = cloudinary.utils.api_sign_request(
       uploadParams,
-      process.env.CLOUDINARY_API_SECRET
+      cloudApiSecret
     );
 
     res.json({
       signature,
       timestamp,
       public_id: publicId,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      upload_url: `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload`,
+      api_key: cloudApiKey,
+      cloud_name: cloudName,
+      upload_url: `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
     });
 
   } catch (error) {
@@ -64,7 +71,10 @@ const saveVideoMetadata = async (req, res) => {
       duration,
     } = req.body;
 
-    const userId = req.result._id;
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized access' });
+    }
 
     // Verify the upload with Cloudinary
     const cloudinaryResource = await cloudinary.api.resource(

@@ -14,8 +14,7 @@ const TABS = [
 ];
 
 function AdminPanel() {
-    const location = useLocation();
-    const [activeTab, setActiveTab] = useState(location.state?.tab || 'create');
+    const [activeTab, setActiveTab] = useState('create');
     const navigate = useNavigate();
 
     return (
