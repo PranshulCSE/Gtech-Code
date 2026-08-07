@@ -12,6 +12,9 @@ import { checkAuth } from '../authSlice';
 import ProblemPage from './pages/ProblemPage'
 import Profile from './pages/Profile'
 import BrowseProblems from './pages/BrowseProblems'
+import AdminUpload from './components/AdminUpload'
+import AdminVideo from "./components/AdminVideo"
+
 
 // FIX: Move RequireAuth and RequireAdmin outside App to prevent unnecessary remounts
 // These components should have stable identity across renders
@@ -57,6 +60,7 @@ function App() {
         <Route path='/reset-password/:token' element={<ResetPassword />} />
         <Route path="/admin" element={<RequireAdmin isAuthenticated={isAuthenticated} user={user}><AdminPanel /></RequireAdmin>} />
         <Route path="/browse" element={<RequireAuth isAuthenticated={isAuthenticated}><BrowseProblems /></RequireAuth>} />
+        <Route path="/admin/upload/:problemId" element={<RequireAdmin isAuthenticated={isAuthenticated} user={user}><AdminUpload /></RequireAdmin>} />
         <Route path="/profile" element={<RequireAuth isAuthenticated={isAuthenticated}><Profile /></RequireAuth>} />
         <Route path="/problem/:problemid" element={<RequireAuth isAuthenticated={isAuthenticated}><ProblemPage /></RequireAuth>} />
       </Routes>

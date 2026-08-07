@@ -1,18 +1,21 @@
-import { useState } from 'react';
+import { useLocation, useState } from 'react';
 import { useNavigate } from 'react-router';
 import ProblemForm from '../components/ProblemForm';
 import ManageProblems from '../components/ManageProblems';
 import ManageAdmins from '../components/ManageAdmins';
+import AdminVideo from '../components/AdminVideo.jsx'
 import Logo from '../components/Logo.jsx';
 
 const TABS = [
     { key: 'create', label: 'Create Problem', icon: '➕' },
     { key: 'manage', label: 'Manage Problems', icon: '📚' },
-    { key: 'admins', label: 'Manage Admins', icon: '🛡️' }
+    { key: 'admins', label: 'Manage Admins', icon: '🛡️' },
+    { key: 'videos', label: 'Manage Editorial Videos', icon: '📽️' }
 ];
 
 function AdminPanel() {
-    const [activeTab, setActiveTab] = useState('manage');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(location.state?.tab || 'create');
     const navigate = useNavigate();
 
     return (
@@ -52,6 +55,7 @@ function AdminPanel() {
                 {activeTab === 'create' && <ProblemForm mode="create" />}
                 {activeTab === 'manage' && <ManageProblems />}
                 {activeTab === 'admins' && <ManageAdmins />}
+                {activeTab === 'videos' && <AdminVideo />}
             </div>
         </div>
     );

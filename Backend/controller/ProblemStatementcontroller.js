@@ -135,17 +135,18 @@ const problemFetch = async (req, res) => {
             return res.status(404).send("Problem Statement not found");
         }
 
-        const videos = await SolutionVideo.find({ problemId: id });
+
+        const videos = await solutionVideo.findOne({ problemId: id });
 
         const problemData = problem.toObject();
         const solvedProblems = req.user?.problemsolved || [];
         const isSolved = solvedProblems.some((solvedProblemId) => solvedProblemId.toString() === problem._id.toString());
 
         if (videos) {
-            problemData.secureUrl = secureUrl;
-            problemData.cloudinaryPublicId = cloudinaryPublicId;
-            problemData.thumbnailUrl = thumbnailUrl;
-            problemData.duration = duration;
+            problemData.secureUrl = videos.secureUrl;
+            problemData.cloudinaryPublicId = videos.cloudinaryPublicId;
+            problemData.thumbnailUrl = videos.thumbnailUrl;
+            problemData.duration = videos.duration;
 
             if (!isSolved) {
                 delete problemData.ReferenceSolution;
