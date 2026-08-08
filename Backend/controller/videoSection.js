@@ -43,16 +43,16 @@ const generateUploadSignature = async (req, res) => {
     // Generate signature
     const signature = cloudinary.utils.api_sign_request(
       uploadParams,
-      cloudApiSecret
+      process.env.CLOUDINARY_API_SECRET
     );
 
     res.json({
       signature,
       timestamp,
       public_id: publicId,
-      api_key: cloudApiKey,
-      cloud_name: cloudName,
-      upload_url: `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      upload_url: `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload`,
     });
 
   } catch (error) {
@@ -97,16 +97,8 @@ const saveVideoMetadata = async (req, res) => {
       return res.status(409).json({ error: 'Video already exists' });
     }
 
-    const thumbnailUrl = cloudinary.url(cloudinaryResource.public_id, {
-      resource_type: 'image',
-      transformation: [
-        { width: 400, height: 225, crop: 'fill' },
-        { quality: 'auto' },
-        { start_offset: 'auto' }
-      ],
-      format: 'jpg'
-    });
-
+    const thumbnailUrl = cloudinary.image(cloudinaryResource.public_id, { start_offset: "0.5", resource_type: "video" });
+    
     // Create video solution record
     const videoSolution = await SolutionVideo.create({
       problemId,
