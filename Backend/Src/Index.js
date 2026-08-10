@@ -9,7 +9,7 @@ const ProblemRouter = require("../Routes/ProblemStatement");
 const RedisClient = require('../config/Redis');
 const User = require('../model/User');
 const AiRouter = require("../Routes/AiChat");
-const video = require('../routes/video');
+const video = require('../Routes/video');
 const cors = require('cors');
 
 const clientOrigin = process.env.CLIENT_URL;
