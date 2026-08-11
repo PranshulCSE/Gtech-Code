@@ -21,7 +21,7 @@ const registerUser = async (req, res) => {
 
         const rawVerificationToken = crypto.randomBytes(32).toString('hex');
         const hashedVerificationToken = crypto.createHash('sha256').update(rawVerificationToken).digest('hex');
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const clientUrl = process.env.CLIENT_URL;
 
         // FIX: Explicitly assign only whitelisted fields to prevent mass assignment
         const newUser = await user.create({
@@ -285,7 +285,7 @@ const resetPassword = async (req, res) => {
         existingUser.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
         await existingUser.save();
 
-        const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const clientUrl = process.env.CLIENT_URL;
         const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
 
         await sendEmail({
