@@ -19,7 +19,7 @@ function ForgotPassword() {
             setMessage(response.data?.message || 'Reset link sent to your email');
             setEmail('');
         } catch (submitError) {
-            setError(submitError.message);
+            setError("Kindly Enter Correct Details.");
         } finally {
             setLoading(false);
         }

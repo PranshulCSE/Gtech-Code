@@ -22,7 +22,7 @@ function ResetPassword() {
             setMessage(response.data?.message || 'Password reset successfully');
             setNewPassword('');
         } catch (submitError) {
-            setError(submitError.message);
+            setError('Unable to Reset Password. Please try again later.');
         } finally {
             setLoading(false);
         }

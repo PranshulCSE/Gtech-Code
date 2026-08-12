@@ -36,8 +36,8 @@ const registerUser = async (req, res) => {
 
         const token = jwt.sign({ _id: newUser._id, email: newUser.email, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        res.cookie('token', token, { 
-            httpOnly: true, 
+        res.cookie('token', token, {
+            httpOnly: true,
             maxAge: 60 * 60 * 1000,
             sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production'
@@ -101,8 +101,8 @@ const loginUser = async (req, res) => {
         const token = jwt.sign({ _id: existingUser._id, email: existingUser.email, role: existingUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' }); // FIXED: role was missing here (registerUser token had it, login token didn't) -> auth/role middleware would break right after login.
 
         //   Setting the token in the Cookie and Setting its MaxAge to 1 hour
-        res.cookie('token', token, { 
-            httpOnly: true, 
+        res.cookie('token', token, {
+            httpOnly: true,
             maxAge: 60 * 60 * 1000,
             sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production'

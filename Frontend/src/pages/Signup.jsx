@@ -47,7 +47,7 @@ function Signup() {
             success('Account created', 'Please verify your email to complete signup.');
             navigate('/login');
         } catch (err) {
-            const message = err || 'Unable to sign up';
+            const message = 'Unable to Sign-Up. Please try again later.';
             setSubmitError(message);
             showError('Signup failed', message);
         }

@@ -41,7 +41,7 @@ function Login() {
             success('Welcome back', 'You are signed in successfully.');
             navigate('/');
         } catch (err) {
-            const message = err || 'Unable to sign in';
+            const message = 'Invalid Credentials';
             setSubmitError(message);
             showError('Login failed', message);
         }

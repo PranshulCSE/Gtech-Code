@@ -29,12 +29,20 @@ export const loginUser = createAsyncThunk(
 export const checkAuth = createAsyncThunk(
   'auth/check',
   async (_, { rejectWithValue }) => {
+    const hasToken = typeof document !== 'undefined' && document.cookie
+      .split(';')
+      .some((cookie) => cookie.trim().startsWith('token='));
+
+    if (!hasToken) {
+      return null;
+    }
+
     try {
       const { data } = await axiosClient.get('/user/check');
       return data;
     } catch (error) {
       if (error.response?.status === 401) {
-        return null; // No active session is a valid unauthenticated state
+        return null;
       }
       return rejectWithValue(error.response?.data?.message || error.message || 'Request failed');
     }

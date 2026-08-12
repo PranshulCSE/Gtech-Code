@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-require('dotenv').config();
 const main = require('../config/DB');
 const cookieParser = require('cookie-parser');
 const authRouter = require("../Routes/UserAuth");
@@ -11,6 +10,7 @@ const User = require('../model/User');
 const AiRouter = require("../Routes/AiChat");
 const video = require('../Routes/video');
 const cors = require('cors');
+require('dotenv').config();
 
 const clientOrigin = process.env.CLIENT_URL;
 
